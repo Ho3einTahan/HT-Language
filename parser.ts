@@ -1,5 +1,4 @@
-import { object } from "yup";
-import { Stmt, Program, BinaryExpr, NumericLiteral, Expr, Identifire } from "./ast.ts";
+import { Stmt, Program, NumericLiteral, Expr, Identifire, VaribleExpr, EqualExpr, VaribleLiteral } from "./ast.ts";
 import { tokenize, Token, TokenType } from "./lexer.ts";
 
 
@@ -49,7 +48,15 @@ export default class Parser {
 
 
     private parse_expr(): Expr {
+       if(this.at().type==TokenType.Let || this.at().type==TokenType.Const) {
+        return this.parse_varible_expr();
+       }
+       else if(this.at().type==TokenType.Number){
         return this.parse_additive_expr();
+       }
+       else{
+        return this.parse_additive_expr();
+       }
     }
 
     //  10 + 12
@@ -74,7 +81,16 @@ export default class Parser {
         return left;
     }
 
-
+    private parse_varible_expr() {
+        let type, name, operator, value;
+        type = this.parse_primary_expr();
+        name = this.eat().value;
+        while (this.at().value == '=') {
+            operator = this.eat().value;
+            value = this.parse_additive_expr();
+        }
+        return { kind: 'VaribleExpr', type, name, operator, value } as VaribleExpr;
+    }
 
     // Orders of precedence
     // AdditiveExpr
@@ -107,6 +123,25 @@ export default class Parser {
             case TokenType.CloseParen:
                 this.eat();
                 return this.parse_primary_expr();
+            // KEYWORDS
+            case TokenType.Let:
+                return {
+                    kind: 'VaribleLiteral',
+                    symbol: this.eat().value
+                } as VaribleLiteral;
+
+            case TokenType.Const:
+                return {
+                    kind: 'VaribleLiteral',
+                    symbol: this.eat().value
+                } as VaribleLiteral;
+
+            // Equal
+            case TokenType.Equals:
+                return {
+                    kind: "EqualLiteral",
+                    symbol: this.eat().value
+                } as EqualExpr;
 
             default:
                 console.error('excepting error not found token ..... : ' + this.tokens[0].value);
