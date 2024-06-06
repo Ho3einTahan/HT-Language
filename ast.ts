@@ -3,7 +3,14 @@ export type NodeType =
     "program" |
     "NumericLiteral" |
     "Identifire" |
-    "BinaryExpr";
+    "BinaryExpr" |
+    // func
+    "FunctionCaller" |
+     // let && const
+    "VaribleExpr" |
+    "VaribleLiteral" |
+    // =
+    "EqualLiteral";
 
 
 export interface Stmt {
@@ -38,3 +45,33 @@ export interface NumericLiteral extends Expr {
     kind: "NumericLiteral";
     value: number;
 }
+
+// Function
+export interface FunctionCaller extends Expr {
+    kind: "FunctionCaller";
+    name:string,
+    params: Expr[];
+    body:string,
+}
+
+
+// Varible Deceleration
+export interface VaribleExpr extends Expr {
+    kind: "VaribleExpr";
+    type:Expr,
+    name:string,
+    operator: string;
+    value:Expr,
+}
+
+
+export interface VaribleLiteral extends Expr {
+    kind: "VaribleLiteral";
+    symbol:string,
+}
+
+export interface EqualExpr extends Expr {
+    kind: "EqualLiteral";
+    symbol:string,
+}
+
