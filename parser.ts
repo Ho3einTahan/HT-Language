@@ -1,3 +1,4 @@
+import { object } from "yup";
 import { Stmt, Program, BinaryExpr, NumericLiteral, Expr, Identifire } from "./ast.ts";
 import { tokenize, Token, TokenType } from "./lexer.ts";
 
@@ -32,8 +33,13 @@ export default class Parser {
 
         // parse until End Of File
         while (this.not_eof()) {
-            program.body.push(this.parse_Stmt());
+            const expr = this.parse_Stmt();
+
+            if (JSON.stringify(expr) != '{}') {
+                program.body.push(expr);
+            }
         }
+        // (((((((((((((((((((((((((912+21+31+32+33+45+12+672+762+65+7653))))))))))))))
         return program;
     }
 
@@ -43,33 +49,32 @@ export default class Parser {
 
 
     private parse_expr(): Expr {
-        return this.parse_additive_paren_expr();
+        return this.parse_additive_expr();
     }
 
     //  10 + 12
-    private parse_additive_paren_expr() {
+    private parse_additive_expr() {
 
         let left, right, operator;
 
-      /*   while (this.at().value == '(' || this.at().value == ')') {
-            if (this.at().value == '(') {
-                this.eat();
-            }
-            else if (this.at().value == ')') {
-                this.eat();
-                break;
-            } */
+        left = this.parse_primary_expr();
 
+        while (this.at().value == '+' || this.at().value == '-' || this.at().value == '*' || this.at().value == '/') {
 
-            left = this.parse_primary_expr();
-            while (this.at().value == '+' || this.at().value == '-' || this.at().value == '*' || this.at().value == '/') {
-                operator = this.eat().value;
-                right = this.parse_primary_expr();
-            }
-        // }
-        const binaryExpr = { kind: 'BinaryExpr',left,operator,right } as BinaryExpr;
-        return binaryExpr;
+            operator = this.eat().value;
+
+            right = this.parse_primary_expr();
+
+            left = {
+                kind: "BinaryExpr",
+                left, operator, right
+            };
+
+        }
+        return left;
     }
+
+
 
     // Orders of precedence
     // AdditiveExpr
@@ -77,6 +82,7 @@ export default class Parser {
     // primaryExpr
 
     private parse_primary_expr(): Expr {
+
         const tk = this.at().type;
 
         switch (tk) {
@@ -93,6 +99,14 @@ export default class Parser {
                     kind: "NumericLiteral",
                     value: parseFloat(this.eat().value)
                 } as NumericLiteral;
+
+            case TokenType.OpenParen:
+                this.eat();
+                return this.parse_primary_expr();
+
+            case TokenType.CloseParen:
+                this.eat();
+                return this.parse_primary_expr();
 
             default:
                 console.error('excepting error not found token ..... : ' + this.tokens[0].value);
