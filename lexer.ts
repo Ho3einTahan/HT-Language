@@ -9,6 +9,8 @@ export enum TokenType {
     Number,
     Identifier,
     Let,
+    Const,
+    Func,
     BinaryOperator,
     Equals,
     OpenParen,
@@ -21,6 +23,8 @@ export enum TokenType {
  */
 const KEYWORDS: Record<string, TokenType> = {
     let: TokenType.Let,
+    const: TokenType.Const,
+    func:TokenType.Func,
 };
 
 // Reoresents a single token from the source-code.
@@ -130,6 +134,3 @@ export function tokenize(sourceCode: string): Token[] {
 // tokenize('let a = (2+4)').forEach(element => {
 //     console.log(element);
 // });
-
-
-
