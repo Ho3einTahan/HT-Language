@@ -127,10 +127,3 @@ export function tokenize(sourceCode: string): Token[] {
 
     return tokens;
 }
-
-
-
-
-// tokenize('let a = (2+4)').forEach(element => {
-//     console.log(element);
-// });
