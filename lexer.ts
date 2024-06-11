@@ -11,10 +11,13 @@ export enum TokenType {
     Let,
     Const,
     Func,
+    Log,
     BinaryOperator,
     Equals,
     OpenParen,
     CloseParen,
+    OpenBracket,
+    CloseBracket,
     EOF, // end of file
 }
 
@@ -24,7 +27,8 @@ export enum TokenType {
 const KEYWORDS: Record<string, TokenType> = {
     let: TokenType.Let,
     const: TokenType.Const,
-    func:TokenType.Func,
+    func: TokenType.Func,
+    log: TokenType.Log,
 };
 
 // Reoresents a single token from the source-code.
@@ -78,7 +82,14 @@ export function tokenize(sourceCode: string): Token[] {
             tokens.push(token(src.shift(), TokenType.OpenParen));
         } else if (src[0] == ")") {
             tokens.push(token(src.shift(), TokenType.CloseParen));
-        } // HANDLE BINARY OPERATORS
+        }
+        else if (src[0] == '{') {
+            tokens.push(token(src.shift(), TokenType.OpenBracket));
+        }
+        else if (src[0] == '}') {
+            tokens.push(token(src.shift(), TokenType.CloseBracket));
+        }
+        // HANDLE BINARY OPERATORS
         else if (src[0] == "+" || src[0] == "-" || src[0] == "*" || src[0] == "/") {
             tokens.push(token(src.shift(), TokenType.BinaryOperator));
         } // Handle Conditional & Assignment Tokens
@@ -106,17 +117,25 @@ export function tokenize(sourceCode: string): Token[] {
                 const reserved = KEYWORDS[ident];
                 // If value is not undefined then the identifier is
                 // reconized keyword
-                if (reserved) {
+                if (reserved) {                
                     tokens.push(token(ident, reserved));
                 } else {
                     // Unreconized name must mean user defined symbol.
                     tokens.push(token(ident, TokenType.Identifier));
                 }
-            } else if (isskippable(src[0])) {
+            }
+            else if (src[0] == "'") {
+                // example   '1'
+                var stringValue = src.shift()! + src.shift()! + src.shift();
+                tokens.push(token(stringValue, TokenType.Identifier));
+            }
+            else if (src[0] == ',') {
+                tokens.push(token(src.shift(), TokenType.Identifier));
+            }
+            else if (isskippable(src[0])) {
                 // Skip uneeded chars.
                 src.shift();
             } // Handle unreconized characters.
-            // TODO: Impliment better errors and error recovery.
             else {
                 console.error("Unreconized character found in source: ", src[0].charCodeAt(0), src[0]);
             }
