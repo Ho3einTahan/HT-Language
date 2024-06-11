@@ -6,7 +6,9 @@ export type NodeType =
     "BinaryExpr" |
     // func
     "FunctionCaller" |
-     // let && const
+    // log
+    "LogExpr" |
+    // let && const
     "VaribleExpr" |
     "VaribleLiteral" |
     // =
@@ -46,32 +48,39 @@ export interface NumericLiteral extends Expr {
     value: number;
 }
 
-// Function
+// Function Caller
 export interface FunctionCaller extends Expr {
     kind: "FunctionCaller";
-    name:string,
-    params: Expr[];
-    body:string,
+    name: Expr,
+    params: Array<string>;
+    body: Expr[],
+}
+
+
+// log() or Console.log()
+export interface LogExpr extends Expr {
+    kind: "LogExpr";
+    params: Array<any>;
 }
 
 
 // Varible Deceleration
 export interface VaribleExpr extends Expr {
     kind: "VaribleExpr";
-    type:Expr,
-    name:string,
+    type: Expr,
+    name: string,
     operator: string;
-    value:Expr,
+    value: Expr,
 }
 
 
 export interface VaribleLiteral extends Expr {
     kind: "VaribleLiteral";
-    symbol:string,
+    symbol: string,
 }
 
 export interface EqualExpr extends Expr {
     kind: "EqualLiteral";
-    symbol:string,
+    symbol: string,
 }
 
