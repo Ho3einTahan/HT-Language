@@ -130,6 +130,9 @@ export default class Parser {
                 else if (this.at().type == TokenType.Log) {
                     body.push(this.parse_log_expr());
                 }
+                else if (this.at().type == TokenType.Func) {
+                    body.push(this.parse_function_expr());
+                }
             }
 
             // remove closeBracket
