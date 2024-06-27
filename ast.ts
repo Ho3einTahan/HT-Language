@@ -11,9 +11,8 @@ export type NodeType =
     // let && const
     "VaribleExpr" |
     "VaribleLiteral" |
-    // =
-    "EqualLiteral";
-
+    // if
+    "ConditionalExpr"
 
 export interface Stmt {
     kind: NodeType;
@@ -79,8 +78,8 @@ export interface VaribleLiteral extends Expr {
     symbol: string,
 }
 
-export interface EqualExpr extends Expr {
-    kind: "EqualLiteral";
-    symbol: string,
+export interface conditionalExpr extends Expr {
+    kind: "ConditionalExpr";
+    condition: string,
 }
 
