@@ -1,10 +1,11 @@
-// https://github.com/tlaceby/guide-to-interpreters-series
+// https://github.com/Ho3einTahan/ht-language
 // -----------------------------------------------------------
 // ---------------          LEXER          -------------------
 // ---  Responsible for producing tokens from the source   ---
 // -----------------------------------------------------------
 
 // Represents tokens that our language understands in parsing.
+
 export enum TokenType {
     Number,
     Identifier,
@@ -59,7 +60,7 @@ function isskippable(str: string) {
 /**
  Return whether the character is a valid integer -> [0-9]
  */
-function isint(str: string) {
+export function isint(str: string) {
     const c = str.charCodeAt(0);
     return c >= 48 && c <= 57;
 }
@@ -103,7 +104,7 @@ export function tokenize(sourceCode: string): Token[] {
                 while (src.length > 0 && isint(src[0])) {
                     num += src.shift();
                 }
-
+            
                 // append new numeric token.
                 tokens.push(token(num, TokenType.Number));
             } // Handle Identifier & Keyword Tokens.
