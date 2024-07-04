@@ -1,12 +1,30 @@
-import { number } from "yup";
-import { Stmt, Program, NumericLiteral, Expr, Identifire, VaribleExpr, EqualExpr, VaribleLiteral, FunctionCaller, BinaryExpr, LogExpr } from "./ast.ts";
+import { Stmt, Program, NumericLiteral, Expr, Identifire, VaribleExpr, VaribleLiteral, FunctionCaller, LogExpr } from "./ast.ts";
 import { tokenize, Token, TokenType } from "./lexer.ts";
 
+
+
+// Varible Memory
+export class Memory {
+
+    private memory: Record<string, any> = {};
+
+    public get(key: string) {
+        return this.memory[key];
+    }
+
+    public setNewVarible(key: string, value: any, type: string): void {
+        // this.memory['vName'] = value;
+        this.memory[key] = value;
+    }
+
+}
 
 
 export default class Parser {
 
     private tokens: Token[] = [];
+
+    public memory = new Memory();
 
     private not_eof(): boolean {
         return this.tokens[0]?.type !== undefined && this.tokens[0].type !== TokenType.EOF;
@@ -29,8 +47,7 @@ export default class Parser {
         const program: Program = {
             kind: "program",
             body: [],
-        }
-
+        };
         // parse until End Of File
         while (this.not_eof()) {
             const expr = this.parse_Stmt();
@@ -39,7 +56,6 @@ export default class Parser {
                 program.body.push(expr);
             }
         }
-        // (((((((((((((((((((((((((912+21+31+32+33+45+12+672+762+65+7653))))))))))))))
         return program;
     }
 
@@ -49,7 +65,10 @@ export default class Parser {
 
 
     private parse_expr(): Expr {
-        if (this.at().type == TokenType.Let || this.at().type == TokenType.Const) {
+        // if varibleName  exists in memory
+        // let a=10
+        // a=10
+        if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memory.get(this.at().value)) {
             return this.parse_varible_expr();
         }
         else if (this.at().type == TokenType.Number) {
@@ -74,7 +93,6 @@ export default class Parser {
         left = this.parse_primary_expr();
 
         while (this.at().value == '+' || this.at().value == '-' || this.at().value == '*' || this.at().value == '/') {
-
             operator = this.eat().value;
 
             right = this.parse_primary_expr();
@@ -92,7 +110,7 @@ export default class Parser {
         let name;
         let body: Expr[] = [];
         let params = new Array<string>;
-
+        const memory = new Memory();
         // remove KEYWORD func
         this.eat();
 
@@ -106,11 +124,14 @@ export default class Parser {
             // get first param
             params.push(this.eat().value);
 
+            // get second param
             while (this.at().value == ',') {
                 // remove ',' charecter
                 this.eat();
+
                 params.push(this.eat().value);
             }
+
             // remove closeParen
             this.eat();
         }
@@ -119,7 +140,7 @@ export default class Parser {
             // remove openBracket
             this.eat();
 
-            while (this.at().value != '}') {
+            while (this.not_eof()) {
 
                 if (this.at().type == TokenType.Number) {
                     body.push(this.parse_additive_expr());
@@ -133,19 +154,21 @@ export default class Parser {
                 else if (this.at().type == TokenType.Func) {
                     body.push(this.parse_function_expr());
                 }
+                else {
+                    body.push(this.parse_function_expr());
+                }
             }
 
             // remove closeBracket
             this.eat();
         }
 
-        // func asd(a,b,c,d,e)
-        // func asd(a,b,c,d,e){ let a =12  (12+12+32) }
-        // func asd(a,b,c,d,e){ let a =12  12+12+3 }
+        //  func asd(a,b){ let a=12+11 12+13 log((12+12)*2+5+(3+5)) }
+        // func asd(a,b){ let a=12+11 12+13 log((12+12)*2+5+(3+5)) log(10+15) log(2*2*(5+4)) }
         return { kind: "FunctionCaller", name, params, body } as FunctionCaller;
     }
 
-    // log('1','2')  log('1'+'2')  log(1,2)  log(1+2)
+    // log('1'+'2')  log(1+2) log((2*2)+25+(32))
     private parse_log_expr() {
 
         let params: Array<any> = [];
@@ -154,48 +177,54 @@ export default class Parser {
         this.eat();
 
         if (this.at().type == TokenType.OpenParen) {
+
             // remove openParen
             this.eat();
+            // func asd(a,b){ let a=12+11 12+13 log((12+12)*2+5+(3+5)) log(10+15) log(2*2*(5+4)) }
+            while (this.not_eof() && this.at().type != TokenType.Log && this.at().type != TokenType.Const && this.at().type != TokenType.Let && this.at().type != TokenType.CloseBracket) {
 
-            const left = this.parse_primary_expr();
-            // check string and number type
-            params.push(left.kind == "Identifire" ? (left['symbol']) : left['value']);
-
-            while (this.at().value == ',' || this.at().value == '+' || this.at().value == '-' || this.at().value == '*' || this.at().value == '/') {
-                const operator = this.eat().value;
-                params.push(operator);
-                const right = this.parse_primary_expr();
-                // check string and number type
-                params.push(right.kind == "Identifire" ? (right['symbol']) : right['value']);
+                if (this.at().type == TokenType.Func) {
+                    break;
+                }
+                // get second param 
+                params.push(this.eat().value);
             }
 
-            //  log('1'+'2',2+'1'+'3','1'+'2'+'3',1+2+3)
         }
 
-        // remove closeParen
-        this.eat();
-
-        // log('1','2')
+        // remove closeParen  )
+        params.pop();
+        //  func asd(a,b){ let a=12+11 12+13 log((12+12)*2+5+(3+5)) log(10+15) log(2*2*(5+4)) }
         return { kind: "LogExpr", params } as LogExpr;
     }
 
     private parse_varible_expr() {
 
         let type, name, operator, value;
-        type = this.parse_primary_expr();
+
+        // if varibleName exists a=10
+        if (this.at().type == TokenType.Let || this.at().type == TokenType.Const) {
+            type = this.parse_primary_expr();
+        }
+
         name = this.eat().value;
+
         while (this.at().value == '=') {
             operator = this.eat().value;
             value = this.parse_additive_expr();
         }
+
+        // define varibleName 
+        this.memory.setNewVarible(name, ' ', 'string');
         return { kind: 'VaribleExpr', type, name, operator, value } as VaribleExpr;
     }
+
+
 
     // Orders of precedence
     // AdditiveExpr
     // MultiplicitaveExpr
     // primaryExpr
-
     private parse_primary_expr(): Expr {
 
         const tk = this.at().type;
@@ -233,16 +262,10 @@ export default class Parser {
                     symbol: this.eat().value
                 } as VaribleLiteral;
 
-            // Equal
-            case TokenType.Equals:
-                return {
-                    kind: "EqualLiteral",
-                    symbol: this.eat().value
-                } as EqualExpr;
 
             default:
                 console.error('excepting error not found token ..... : ' + this.tokens[0].value);
-                return {} as Stmt;
+                return {} as Expr;
         }
 
 
