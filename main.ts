@@ -1,15 +1,20 @@
+import { Memory } from "./parser.ts";
 import Parser from "./parser.ts";
-import { Program, BinaryExpr, Identifire, NumericLiteral, Expr, VaribleExpr, FunctionCaller, LogExpr } from "./ast.ts"; import { string } from "yup";
-"./ast.ts";
+import { BinaryExpr, NumericLiteral, Expr, VaribleExpr, FunctionCaller, LogExpr, Identifire } from "./ast.ts";
+import { filterVname } from "./function/filter-vName.ts";
 
 
 repl();
 
 
+
 async function repl() {
 
     console.log('repl v0.1');
+
     const parser = new Parser();
+
+    const memory = parser.memory;
 
     while (true) {
 
@@ -25,7 +30,12 @@ async function repl() {
             if (ast.kind == 'NumericLiteral') {
                 const NumericAST = ast as NumericLiteral;
                 return NumericAST.value;
-            } else if (ast.kind === 'BinaryExpr') {
+            }
+            else if (ast.kind == "Identifire") {
+                const IdentifierAST = ast as Identifire;
+                return IdentifierAST.symbol;
+            }
+            else if (ast.kind === 'BinaryExpr') {
                 const BinaryAST = ast as BinaryExpr;
 
                 const left = valueComputing(BinaryAST.left);
@@ -47,25 +57,23 @@ async function repl() {
             }
             else if (ast.kind == 'VaribleExpr') {
                 const varibleExpr = ast as VaribleExpr;
-                return valueComputing(varibleExpr.value);
+                const varibleResult = valueComputing(varibleExpr.value);
+
+                // memory.updateValue(varibleExpr.name, varibleResult, 'string');
+
+                return varibleResult;
             }
             else if (ast.kind == "LogExpr") {
 
                 const logExpr = ast as LogExpr;
                 let params = logExpr.params;
-
-                // console.log(1+2,'1'+2,'1'+'2',1,2,'1','2');
-                // console.log(result);
-                //  log('1'+'2',2+'1'+'3','1'+'2'+'3',1+2+3)
-                // console.log(params);
-                console.log(eval('(2+2)*2'));
-                // console.log((1+2)*(25)+'3'+'4'+'5'+4+5+9+12+'3'+'2'+'d');
-                // console.log(1+2+'1'+'2'+'3'+'4'+'5'+2+2+2+(3-3));
                 return eval(params.join(''));
             }
             else if (ast.kind == 'FunctionCaller') {
+
                 let result: Array<any> = [];
                 const FunctionCallerAst = ast as FunctionCaller;
+
                 FunctionCallerAst.body.forEach(expr => {
                     result.push(valueComputing(expr));
                 });
@@ -74,31 +82,33 @@ async function repl() {
             }
         }
 
-        const programAST = program.body[0];
-        const result = valueComputing(programAST);
-        console.log(result);
+
+
+        function removeDuplicateDeclarations(arr: Expr[]) {
+            return arr.filter(item => {
+                if (item.kind == "VaribleExpr") {
+                    const varibleAST = item as VaribleExpr;
+                    if (memory.get(varibleAST.name) && varibleAST.type != undefined) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+                return true;
+            });
+        }
+
+
+
+
+
+        const filteredVname = filterVname(program.body);
+
+        filteredVname.forEach(programAST => {
+            const result = valueComputing(programAST);
+            console.log(result);
+        });
+
     }
 
 }
-
-// {
-//     kind: "program",
-//     body: [
-//       {
-//         kind: "BinaryExpr",
-//         left: {
-//           kind: "BinaryExpr",
-//           left: {
-//             kind: "BinaryExpr",
-//             left: [Object],
-//             operator: "+",
-//             right: [Object]
-//           },
-//           operator: "+",
-//           right: { kind: "NumericLiteral", value: 15 }
-//         },
-//         operator: "+",
-//         right: { kind: "NumericLiteral", value: 16 }
-//       }
-//     ]
-//   }
