@@ -54,6 +54,7 @@ export default class Parser {
             kind: "program",
             body: [],
         };
+
         // parse until End Of File
         while (this.not_eof()) {
             const expr = this.parse_Stmt();
@@ -111,7 +112,7 @@ export default class Parser {
         }
         return left;
     }
-
+    // func unit (a,b){ let a=20 a=2+12 log(a)}
     private parse_function_expr() {
         let name;
         let body: Expr[] = [];
@@ -204,6 +205,8 @@ export default class Parser {
         return { kind: "LogExpr", params } as LogExpr;
     }
 
+    // const a=10
+    // let b=20
     private parse_varible_expr() {
 
         let type, name, operator, value;
@@ -222,19 +225,14 @@ export default class Parser {
 
         // define varibleName 
         this.memory.defineVaribleName(name, 'string');
-        
+
         const varibleExpr = { kind: 'VaribleExpr', type, name, operator, value } as VaribleExpr;
-        
+
         valueComputing(varibleExpr, this.memory);
 
         return {} as Stmt;
     }
 
-
-
-    // Orders of precedence
-    // AdditiveExpr
-    // MultiplicitaveExpr
     // primaryExpr
     private parse_primary_expr(): Expr {
 
@@ -281,4 +279,5 @@ export default class Parser {
 
 
     }
+
 }
