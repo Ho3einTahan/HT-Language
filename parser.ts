@@ -1,6 +1,6 @@
 import { Stmt, Program, NumericLiteral, Expr, Identifire, VaribleExpr, VaribleLiteral, FunctionCaller, LogExpr } from "./ast.ts";
 import { tokenize, Token, TokenType } from "./lexer.ts";
-
+import { valueComputing } from "./function/value-computing.ts";
 
 
 // Varible Memory
@@ -12,10 +12,16 @@ export class Memory {
         return this.memory[key];
     }
 
-    public setNewVarible(key: string, value: any, type: string): void {
+    public defineVaribleName(key: string, type: string): void {
+        // this.memory['vName'] = value;
+        this.memory[key] = ' ';
+    }
+
+    public setVaribleValue(key: string, value: any, type: string): void {
         // this.memory['vName'] = value;
         this.memory[key] = value;
     }
+
 
 }
 
@@ -215,8 +221,13 @@ export default class Parser {
         }
 
         // define varibleName 
-        this.memory.setNewVarible(name, ' ', 'string');
-        return { kind: 'VaribleExpr', type, name, operator, value } as VaribleExpr;
+        this.memory.defineVaribleName(name, 'string');
+        
+        const varibleExpr = { kind: 'VaribleExpr', type, name, operator, value } as VaribleExpr;
+        
+        valueComputing(varibleExpr, this.memory);
+
+        return {} as Stmt;
     }
 
 
