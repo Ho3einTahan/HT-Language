@@ -12,12 +12,7 @@ export class Memory {
         return this.memory[key];
     }
 
-    public defineVaribleName(key: string, type: string): void {
-        // this.memory['vName'] = value;
-        this.memory[key] = ' ';
-    }
-
-    public setVaribleValue(key: string, value: any, type: string): void {
+    public defineVarible(key: string, value: any, type: string): void {
         // this.memory['vName'] = value;
         this.memory[key] = value;
     }
@@ -223,12 +218,9 @@ export default class Parser {
             value = this.parse_additive_expr();
         }
 
-        // define varibleName 
-        this.memory.defineVaribleName(name, 'string');
+        const varibleValue = valueComputing(value, this.memory);
 
-        const varibleExpr = { kind: 'VaribleExpr', type, name, operator, value } as VaribleExpr;
-
-        valueComputing(varibleExpr, this.memory);
+        this.memory.defineVarible(name, varibleValue, 'string');
 
         return {} as Stmt;
     }
@@ -238,45 +230,53 @@ export default class Parser {
 
         const tk = this.at().type;
 
-        switch (tk) {
-            case TokenType.Identifier:
-                return {
-                    kind: "Identifire",
-                    symbol: this.eat().value
-                } as Identifire;
-
-            case TokenType.Number:
-                return {
-                    kind: "NumericLiteral",
-                    value: parseFloat(this.eat().value)
-                } as NumericLiteral;
-
-            case TokenType.OpenParen:
-                this.eat();
-                return this.parse_primary_expr();
-
-            case TokenType.CloseParen:
-                this.eat();
-                return this.parse_primary_expr();
-            // KEYWORDS
-            case TokenType.Let:
-                return {
-                    kind: 'VaribleLiteral',
-                    symbol: this.eat().value
-                } as VaribleLiteral;
-
-            case TokenType.Const:
-                return {
-                    kind: 'VaribleLiteral',
-                    symbol: this.eat().value
-                } as VaribleLiteral;
-
-
-            default:
-                console.error('excepting error not found token ..... : ' + this.tokens[0].value);
-                return {} as Expr;
+        // let c=a*b
+        if (this.memory.get(this.at().value)) {
+            return {
+                kind: "NumericLiteral",
+                value: parseFloat(this.memory.get(this.eat().value))
+            } as NumericLiteral;
         }
+        else {
+            switch (tk) {
+                case TokenType.Identifier:
+                    return {
+                        kind: "Identifire",
+                        symbol: this.eat().value
+                    } as Identifire;
 
+                case TokenType.Number:
+                    return {
+                        kind: "NumericLiteral",
+                        value: parseFloat(this.eat().value)
+                    } as NumericLiteral;
+
+                case TokenType.OpenParen:
+                    this.eat();
+                    return this.parse_primary_expr();
+
+                case TokenType.CloseParen:
+                    this.eat();
+                    return this.parse_primary_expr();
+                // KEYWORDS
+                case TokenType.Let:
+                    return {
+                        kind: 'VaribleLiteral',
+                        symbol: this.eat().value
+                    } as VaribleLiteral;
+
+                case TokenType.Const:
+                    return {
+                        kind: 'VaribleLiteral',
+                        symbol: this.eat().value
+                    } as VaribleLiteral;
+
+
+                default:
+                    console.error('excepting error not found token ..... : ' + this.tokens[0].value);
+                    return {} as Expr;
+            }
+        }
 
     }
 
