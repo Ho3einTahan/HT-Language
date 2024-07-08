@@ -33,14 +33,6 @@ export function valueComputing(ast: Expr,memory:Memory) {
         }
 
     }
-    else if (ast.kind == 'VaribleExpr') {
-        const varibleExpr = ast as VaribleExpr;
-        const varibleResult = valueComputing(varibleExpr.value,memory);
-
-        memory.setVaribleValue(varibleExpr.name, varibleResult, 'string');
-        // when log(vName) will print
-        return undefined;
-    }
     else if (ast.kind == "LogExpr") {
 
         const logExpr = ast as LogExpr;
