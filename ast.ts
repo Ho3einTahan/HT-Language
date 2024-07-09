@@ -62,8 +62,14 @@ export interface LogExpr extends Expr {
     params: Array<any>;
 }
 
+export interface VaribleLiteral extends Expr {
+    kind: "VaribleLiteral";
+    symbol: string,
+}
+
 export interface conditionalExpr extends Expr {
     kind: "ConditionalExpr";
-    condition: string,
+    params: Array<string>,
+    body: Array<Expr>,
 }
 
