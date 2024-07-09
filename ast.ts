@@ -62,17 +62,6 @@ export interface LogExpr extends Expr {
     params: Array<any>;
 }
 
-
-// Varible Deceleration
-export interface VaribleExpr extends Expr {
-    kind: "VaribleExpr";
-    type: Expr,
-    name: string,
-    operator: string;
-    value: Expr,
-}
-
-
 export interface VaribleLiteral extends Expr {
     kind: "VaribleLiteral";
     symbol: string,
