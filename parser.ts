@@ -1,4 +1,4 @@
-import { Stmt, Program, NumericLiteral, Expr, Identifire, VaribleLiteral, FunctionCaller, LogExpr } from "./ast.ts";
+import { Stmt, Program, NumericLiteral, Expr, Identifire, VaribleLiteral, FunctionCaller, LogExpr, conditionalExpr } from "./ast.ts";
 import { tokenize, Token, TokenType } from "./lexer.ts";
 import { valueComputing } from "./function/value-computing.ts";
 
@@ -82,8 +82,11 @@ export default class Parser {
         else if (this.at().type == TokenType.Log) {
             return this.parse_log_expr();
         }
-        else {
-            return this.parse_function_expr();
+        else if(this.at().type==TokenType.IF) {
+            return this.parse_conditional_expr();
+        }
+        else{
+            return this.parse_conditional_expr();
         }
     }
 
@@ -218,26 +221,27 @@ export default class Parser {
             value = this.parse_additive_expr();
         }
 
-        const varibleValue = valueComputing(value,this.memory);
+        const varibleValue = valueComputing(value, this.memory);
 
         this.memory.defineVarible(name, varibleValue, 'string');
 
         return {} as Stmt;
     }
-  
-   
-    private parse_conditional_expr(){
-        
-        let params:Array<string>=[];
+
+
+    private parse_conditional_expr() {
+
+        let params: Array<string> = [];
+        let body: Array<Expr> = [];
 
         // remove IF KEYWORD
         this.eat();
-        
+
         // remove openParen
         this.eat();
 
-        while (this.at().type!=TokenType.CloseParen) {
-            
+        while (this.at().type != TokenType.CloseParen) {
+
             params.push(this.eat().value);
 
         }
@@ -245,13 +249,29 @@ export default class Parser {
         // remove closeParen
         this.eat();
 
+        // remove openBracket
+        this.eat();
+
+        while (this.at().type != TokenType.CloseBracket) {
+
+        body.push(this.parse_expr());
+
+        }
+
+        // remove closeBracket
+        this.eat();
+
+        console.log(eval(params.join('')));
+
+        console.log({ kind: "ConditionalExpr", params, body });
+        return { kind: "ConditionalExpr", params, body } as conditionalExpr;
     }
 
     // primaryExpr
     private parse_primary_expr(): Expr {
 
         const tk = this.at().type;
-        
+
         // let c=a*b
         if (this.memory.get(this.at().value)) {
             return {
