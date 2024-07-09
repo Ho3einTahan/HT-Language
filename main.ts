@@ -26,9 +26,8 @@ async function repl() {
 
         program.body.forEach(programAST => {
             const result = valueComputing(programAST,memory);
-            if (result != undefined) {
                 console.log(result);
-            }
+            
         });
 
         
