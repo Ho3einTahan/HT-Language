@@ -225,6 +225,28 @@ export default class Parser {
         return {} as Stmt;
     }
   
+   
+    private parse_conditional_expr(){
+        
+        let params:Array<string>=[];
+
+        // remove IF KEYWORD
+        this.eat();
+        
+        // remove openParen
+        this.eat();
+
+        while (this.at().type!=TokenType.CloseParen) {
+            
+            params.push(this.eat().value);
+
+        }
+
+        // remove closeParen
+        this.eat();
+
+    }
+
     // primaryExpr
     private parse_primary_expr(): Expr {
 
