@@ -1,5 +1,5 @@
 import { Memory } from "../parser.ts";
-import { BinaryExpr, NumericLiteral, Expr, VaribleExpr, FunctionCaller, LogExpr, Identifire } from "../ast.ts";
+import { BinaryExpr, NumericLiteral, Expr, FunctionCaller, LogExpr, Identifire } from "../ast.ts";
 
 
 
