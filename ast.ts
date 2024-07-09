@@ -69,7 +69,7 @@ export interface VaribleLiteral extends Expr {
 
 export interface conditionalExpr extends Expr {
     kind: "ConditionalExpr";
+    paramResult:boolean,
     params: Array<string>,
     body: Array<Expr>,
 }
-
