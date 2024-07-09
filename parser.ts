@@ -1,4 +1,4 @@
-import { Stmt, Program, NumericLiteral, Expr, Identifire, VaribleExpr, VaribleLiteral, FunctionCaller, LogExpr } from "./ast.ts";
+import { Stmt, Program, NumericLiteral, Expr, Identifire, VaribleLiteral, FunctionCaller, LogExpr } from "./ast.ts";
 import { tokenize, Token, TokenType } from "./lexer.ts";
 import { valueComputing } from "./function/value-computing.ts";
 
@@ -218,18 +218,18 @@ export default class Parser {
             value = this.parse_additive_expr();
         }
 
-        const varibleValue = valueComputing(value, this.memory);
+        const varibleValue = valueComputing(value,this.memory);
 
         this.memory.defineVarible(name, varibleValue, 'string');
 
         return {} as Stmt;
     }
-
+  
     // primaryExpr
     private parse_primary_expr(): Expr {
 
         const tk = this.at().type;
-
+        
         // let c=a*b
         if (this.memory.get(this.at().value)) {
             return {
