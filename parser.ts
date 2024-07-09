@@ -82,10 +82,10 @@ export default class Parser {
         else if (this.at().type == TokenType.Log) {
             return this.parse_log_expr();
         }
-        else if(this.at().type==TokenType.IF) {
+        else if (this.at().type == TokenType.IF) {
             return this.parse_conditional_expr();
         }
-        else{
+        else {
             return this.parse_conditional_expr();
         }
     }
@@ -242,7 +242,12 @@ export default class Parser {
 
         while (this.at().type != TokenType.CloseParen) {
 
-            params.push(this.eat().value);
+            if (this.memory.get(this.at().value)) {
+                params.push(this.memory.get(this.eat().value));
+            }
+            else {
+                params.push(this.eat().value);
+            }
 
         }
 
@@ -253,18 +258,30 @@ export default class Parser {
         this.eat();
 
         while (this.at().type != TokenType.CloseBracket) {
-
-        body.push(this.parse_expr());
-
+            body.push(this.parse_expr());
         }
 
         // remove closeBracket
         this.eat();
+        
+        // remove ELSE KEYWORDS
+        this.eat();
+
+        // remove openBracket
+        this.eat();
+
+        while (this.at().type!=TokenType.CloseBracket) {
+            
+            
+
+        }
 
         console.log(eval(params.join('')));
 
-        console.log({ kind: "ConditionalExpr", params, body });
-        return { kind: "ConditionalExpr", params, body } as conditionalExpr;
+        const paramResult: boolean = eval(params.join(''));
+
+        console.log({ kind: "ConditionalExpr", params, paramResult, body });
+        return { kind: "ConditionalExpr", params, paramResult, body } as conditionalExpr;
     }
 
     // primaryExpr
