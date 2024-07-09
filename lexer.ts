@@ -14,7 +14,8 @@ export enum TokenType {
     Func,
     Log,
     BinaryOperator,
-    Equals,
+    LogicalOperator,
+    // Equals,
     OpenParen,
     CloseParen,
     OpenBracket,
@@ -92,12 +93,13 @@ export function tokenize(sourceCode: string): Token[] {
             tokens.push(token(src.shift(), TokenType.CloseBracket));
         }
         // HANDLE BINARY OPERATORS
-        else if (src[0] == "+" || src[0] == "-" || src[0] == "*" || src[0] == "/") {
+        else if (src[0] == "+" || src[0] == "-" || src[0] == "*" || src[0] == "/" || src[0] == "%" || src[0] == "^") {
             tokens.push(token(src.shift(), TokenType.BinaryOperator));
-        } // Handle Conditional & Assignment Tokens
-        else if (src[0] == "=") {
-            tokens.push(token(src.shift(), TokenType.Equals));
-        } // HANDLE MULTICHARACTER KEYWORDS, TOKENS, IDENTIFIERS ETC...
+        }
+        else if (src[0] == "=" || src[0] == ">" || src[0] == "<" || src[0] == "!" || src[0] == "&" || src[0] == "|") {
+            tokens.push(token(src.shift(), TokenType.LogicalOperator));
+        }
+        // HANDLE MULTICHARACTER KEYWORDS, TOKENS, IDENTIFIERS ETC...
         else {
             // Handle numeric literals -> Integers
             if (isint(src[0])) {
@@ -105,7 +107,7 @@ export function tokenize(sourceCode: string): Token[] {
                 while (src.length > 0 && isint(src[0])) {
                     num += src.shift();
                 }
-            
+
                 // append new numeric token.
                 tokens.push(token(num, TokenType.Number));
             } // Handle Identifier & Keyword Tokens.
@@ -119,7 +121,7 @@ export function tokenize(sourceCode: string): Token[] {
                 const reserved = KEYWORDS[ident];
                 // If value is not undefined then the identifier is
                 // reconized keyword
-                if (reserved) {                
+                if (reserved) {
                     tokens.push(token(ident, reserved));
                 } else {
                     // Unreconized name must mean user defined symbol.
