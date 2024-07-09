@@ -19,6 +19,7 @@ export enum TokenType {
     CloseParen,
     OpenBracket,
     CloseBracket,
+    IF,
     EOF, // end of file
 }
 
