@@ -1,8 +1,6 @@
 import { Memory } from "../parser.ts";
 import { BinaryExpr, NumericLiteral, Expr, FunctionCaller, LogExpr, Identifire, conditionalExpr } from "../ast.ts";
 
-
-
 export function valueComputing(ast: Expr, memory: Memory) {
 
     if (ast.kind == 'NumericLiteral') {
@@ -46,19 +44,25 @@ export function valueComputing(ast: Expr, memory: Memory) {
                 params[i] = memory.get(str);
             }
         }
-        return eval(params.join(''));
+
+        console.log(eval(params.join('')));
+
+        return {};
     }
     else if (ast.kind == "ConditionalExpr") {
-
-        let result: Array<any> = [];
+        let result: Array<Expr> = [];
         const conditionalAst = ast as conditionalExpr;
-        if (conditionalAst.paramResult) {
-            conditionalAst.body.forEach(conditional => {
-                result.push(valueComputing(conditional, memory));
-            });
-        }
 
-        return result;
+        conditionalAst.body.forEach(conditional => {
+
+            const valueCompute = valueComputing(conditional, memory);
+
+            if (JSON.stringify(valueCompute) != '{}')
+                result.push(valueCompute);
+
+        });
+
+        return {};
     }
     else if (ast.kind == 'FunctionCaller') {
 
