@@ -171,14 +171,20 @@ export default class Parser {
 
             // remove openParen
             this.eat();
-            // func asd(a,b){ let a=12+11 12+13 log((12+12)*2+5+(3+5)) log(10+15) log(2*2*(5+4)) }
+
             while (this.not_eof() && this.at().type != TokenType.Log && this.at().type != TokenType.Const && this.at().type != TokenType.Let && this.at().type != TokenType.CloseBracket) {
 
                 if (this.at().type == TokenType.Func) {
                     break;
                 }
-                // get second param 
-                params.push(this.eat().value);
+
+                if (this.memory.get(this.at().value))
+                    // set varible value
+                    params.push(this.memory.get(this.eat().value));
+                else
+                    // get second param 
+                    params.push(this.eat().value);
+
             }
 
         }
@@ -266,6 +272,11 @@ export default class Parser {
 
             // remove openBracket
             this.eat();
+
+            // clear body for new tokens in else
+            if (paramResult == false) {
+                body = [];
+            }
 
             while (this.at().type != TokenType.CloseBracket) {
 
