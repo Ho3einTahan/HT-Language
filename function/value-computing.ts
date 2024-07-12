@@ -1,5 +1,6 @@
 import { Memory } from "../parser.ts";
 import { BinaryExpr, NumericLiteral, Expr, FunctionCaller, LogExpr, Identifire, conditionalExpr } from "../ast.ts";
+import { type } from "node:os";
 
 export function valueComputing(ast: Expr, memory: Memory) {
 
@@ -32,18 +33,9 @@ export function valueComputing(ast: Expr, memory: Memory) {
 
     }
     else if (ast.kind == "LogExpr") {
-
         const logExpr = ast as LogExpr;
+
         let params = logExpr.params;
-
-        for (let i = 0; i < params.length; i++) {
-            const str = params[i] as string;
-
-            if (memory.get(str)) {
-                // set value
-                params[i] = memory.get(str);
-            }
-        }
 
         console.log(eval(params.join('')));
 
@@ -51,6 +43,7 @@ export function valueComputing(ast: Expr, memory: Memory) {
     }
     else if (ast.kind == "ConditionalExpr") {
         let result: Array<Expr> = [];
+
         const conditionalAst = ast as conditionalExpr;
 
         conditionalAst.body.forEach(conditional => {
@@ -62,11 +55,14 @@ export function valueComputing(ast: Expr, memory: Memory) {
 
         });
 
+        // let a=12 let b=16  if(a>b || b==15){log(a)} log(b)
+        // let a=12 let b=16  if(a>b || b==15){a=15} else { a=20 log(2*2) let a=12 let b=16  if(a>b || b==15){a=15} else { a=20 log(2*2)} log(a) } log(a)
+
         return {};
     }
     else if (ast.kind == 'FunctionCaller') {
-
         let result: Array<any> = [];
+
         const FunctionCallerAst = ast as FunctionCaller;
 
         FunctionCallerAst.body.forEach(expr => {
