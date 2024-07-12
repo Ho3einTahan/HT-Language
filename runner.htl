@@ -1,0 +1,11 @@
+let a=10
+let b=20
+if(a>b){
+
+log('ok')
+
+}
+else{
+log(a)
+
+}
