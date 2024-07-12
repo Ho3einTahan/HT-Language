@@ -1,35 +1,30 @@
 import Parser from "./parser.ts";
 import { valueComputing } from "./function/value-computing.ts";
 
-repl();
+import * as fs from 'node:fs';
 
+repl();
 
 
 async function repl() {
 
-    console.log('repl v0.1');
+    console.log('HoseinTahanLanguage v0.1');
 
     const parser = new Parser();
-   
+
     const memory = parser.memory;
 
-    while (true) {
+    const input = fs.readFileSync('./runner.htl', 'utf8');
 
-        const input = prompt("");
-        // check for no user input o    r exit keyword
-        if (!input || input.includes("exit")) {
-            // break
-            console.log('byby');
-        }
+    const program = parser.produceAST(input);
 
-        const program = parser.produceAST(input!);
+    program.body.forEach(programAST => {
 
-        program.body.forEach(programAST => {
-            const result = valueComputing(programAST,memory);
-                console.log(result);
-            
-        });
+        const result = valueComputing(programAST, memory);
 
-        
-    }
+        if (JSON.stringify(result) != '{}')
+            console.log(result);
+
+    });
+
 }
