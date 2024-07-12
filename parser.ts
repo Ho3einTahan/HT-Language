@@ -121,7 +121,7 @@ export default class Parser {
 
         name = this.parse_primary_expr();
 
-        if (this.at().value.startsWith('(')) {
+        if (this.at().type == TokenType.OpenParen) {
 
             // remove openParen
             this.eat();
@@ -140,28 +140,14 @@ export default class Parser {
             // remove closeParen
             this.eat();
         }
-        if (this.at().value.startsWith('{')) {
+
+        if (this.at().type == TokenType.OpenBracket) {
 
             // remove openBracket
             this.eat();
 
-            while (this.not_eof()) {
-
-                if (this.at().type == TokenType.Number) {
-                    body.push(this.parse_additive_expr());
-                }
-                else if (this.at().type == TokenType.Let || this.at().type == TokenType.Const) {
-                    body.push(this.parse_varible_expr());
-                }
-                else if (this.at().type == TokenType.Log) {
-                    body.push(this.parse_log_expr());
-                }
-                else if (this.at().type == TokenType.Func) {
-                    body.push(this.parse_function_expr());
-                }
-                else {
-                    body.push(this.parse_function_expr());
-                }
+            while (this.at().type != TokenType.CloseBracket) {
+                body.push(this.parse_expr());
             }
 
             // remove closeBracket
@@ -199,6 +185,7 @@ export default class Parser {
 
         // remove closeParen  )
         params.pop();
+
         //  func asd(a,b){ let a=12+11 12+13 log((12+12)*2+5+(3+5)) log(10+15) log(2*2*(5+4)) }
         return { kind: "LogExpr", params } as LogExpr;
     }
@@ -242,12 +229,10 @@ export default class Parser {
 
         while (this.at().type != TokenType.CloseParen) {
 
-            if (this.memory.get(this.at().value)) {
+            if (this.memory.get(this.at().value))
                 params.push(this.memory.get(this.eat().value));
-            }
-            else {
+            else
                 params.push(this.eat().value);
-            }
 
         }
 
@@ -258,29 +243,50 @@ export default class Parser {
         this.eat();
 
         while (this.at().type != TokenType.CloseBracket) {
-            body.push(this.parse_expr());
+
+            // if this.at().value exist in memory update varible value
+            if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memory.get(this.at().value))
+                // update varible value
+                this.parse_varible_expr();
+            else {
+                body.push(this.parse_expr());
+            }
+
         }
 
         // remove closeBracket
         this.eat();
-        
-        // remove ELSE KEYWORDS
-        this.eat();
-
-        // remove openBracket
-        this.eat();
-
-        while (this.at().type!=TokenType.CloseBracket) {
-            
-            
-
-        }
-
-        console.log(eval(params.join('')));
 
         const paramResult: boolean = eval(params.join(''));
 
-        console.log({ kind: "ConditionalExpr", params, paramResult, body });
+        if (this.at().type == TokenType.ELSE) {
+
+            // remove ELSE KEYWORD
+            this.eat();
+
+            // remove openBracket
+            this.eat();
+
+            while (this.at().type != TokenType.CloseBracket) {
+
+                // if top condition is false
+                if (paramResult == false) {
+                    if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memory.get(this.at().value))
+                        // update varible value or define varible
+                        this.parse_varible_expr();
+                    else
+                        body.push(this.parse_expr());
+                } else
+                    // remove extra tokens
+                    this.eat();
+
+            }
+
+            // remove closeBracket
+            this.eat();
+
+        }
+
         return { kind: "ConditionalExpr", params, paramResult, body } as conditionalExpr;
     }
 
@@ -321,13 +327,13 @@ export default class Parser {
                 case TokenType.Let:
                     return {
                         kind: 'VaribleLiteral',
-                        symbol: this.eat().value
+                        type: this.eat().value
                     } as VaribleLiteral;
 
                 case TokenType.Const:
                     return {
                         kind: 'VaribleLiteral',
-                        symbol: this.eat().value
+                        type: this.eat().value
                     } as VaribleLiteral;
 
 
