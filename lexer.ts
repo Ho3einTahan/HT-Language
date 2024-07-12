@@ -21,6 +21,8 @@ export enum TokenType {
     OpenBracket,
     CloseBracket,
     IF,
+    ELSE,
+    ElseIf,
     EOF, // end of file
 }
 
@@ -32,6 +34,10 @@ const KEYWORDS: Record<string, TokenType> = {
     const: TokenType.Const,
     func: TokenType.Func,
     log: TokenType.Log,
+    if: TokenType.IF,
+    else: TokenType.ELSE,
+    elseif: TokenType.ElseIf,
+
 };
 
 // Reoresents a single token from the source-code.
@@ -56,7 +62,7 @@ function isalpha(src: string) {
  * Returns true if the character is whitespace like -> [\s, \t, \n]
  */
 function isskippable(str: string) {
-    return str == " " || str == "\n" || str == "\t";
+    return str == " " || str == "\n" || str == "\t" || str == "\r";
 }
 
 /**
@@ -111,9 +117,9 @@ export function tokenize(sourceCode: string): Token[] {
                 // append new numeric token.
                 tokens.push(token(num, TokenType.Number));
             } // Handle Identifier & Keyword Tokens.
-            else if (isalpha(src[0])) {
+            else if (isalpha(src[0]) || src[0] == "'") {
                 let ident = "";
-                while (src.length > 0 && isalpha(src[0])) {
+                while (src.length > 0 && isalpha(src[0]) || src[0] == "'") {
                     ident += src.shift();
                 }
 
@@ -127,11 +133,6 @@ export function tokenize(sourceCode: string): Token[] {
                     // Unreconized name must mean user defined symbol.
                     tokens.push(token(ident, TokenType.Identifier));
                 }
-            }
-            else if (src[0] == "'") {
-                // example   '1'
-                var stringValue = src.shift()! + src.shift()! + src.shift();
-                tokens.push(token(stringValue, TokenType.Identifier));
             }
             else if (src[0] == ',') {
                 tokens.push(token(src.shift(), TokenType.Identifier));
