@@ -9,7 +9,6 @@ export type NodeType =
     // log
     "LogExpr" |
     // let && const
-    "VaribleExpr" |
     "VaribleLiteral" |
     // if
     "ConditionalExpr"
@@ -62,14 +61,15 @@ export interface LogExpr extends Expr {
     params: Array<any>;
 }
 
+
 export interface VaribleLiteral extends Expr {
     kind: "VaribleLiteral";
-    symbol: string,
+    type: string,
 }
 
 export interface conditionalExpr extends Expr {
     kind: "ConditionalExpr";
-    paramResult:boolean,
+    paramResult: boolean,
     params: Array<string>,
     body: Array<Expr>,
 }
