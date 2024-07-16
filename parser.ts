@@ -1,31 +1,13 @@
 import { Stmt, Program, NumericLiteral, Expr, Identifire, VaribleLiteral, FunctionCaller, LogExpr, conditionalExpr } from "./ast.ts";
 import { tokenize, Token, TokenType } from "./lexer.ts";
 import { valueComputing } from "./function/value-computing.ts";
-
-
-// Varible Memory
-export class Memory {
-
-    private memory: Record<string, any> = {};
-
-    public get(key: string) {
-        return this.memory[key];
-    }
-
-    public defineVarible(key: string, value: any, type: string): void {
-        // this.memory['vName'] = value;
-        this.memory[key] = value;
-    }
-
-
-}
-
+import { MemoryVAR } from "./class/memory-var.ts";
 
 export default class Parser {
 
     private tokens: Token[] = [];
 
-    public memory = new Memory();
+    public memory = new MemoryVAR();
 
     private not_eof(): boolean {
         return this.tokens[0]?.type !== undefined && this.tokens[0].type !== TokenType.EOF;
@@ -115,7 +97,7 @@ export default class Parser {
         let name;
         let body: Expr[] = [];
         let params = new Array<string>;
-        const memory = new Memory();
+
         // remove KEYWORD func
         this.eat();
 
@@ -126,13 +108,13 @@ export default class Parser {
             // remove openParen
             this.eat();
 
-            // get first param
-            params.push(this.eat().value);
+            // get  params
+            while (this.tokens[1].value == ',' || this.at().value == ',') {
 
-            // get second param
-            while (this.at().value == ',') {
-                // remove ',' charecter
-                this.eat();
+                if (this.at().value == ',') {
+                    // remove ',' charecter
+                    this.eat();
+                }
 
                 params.push(this.eat().value);
             }
@@ -156,6 +138,7 @@ export default class Parser {
 
         //  func asd(a,b){ let a=12+11 12+13 log((12+12)*2+5+(3+5)) }
         // func asd(a,b){ let a=12+11 12+13 log((12+12)*2+5+(3+5)) log(10+15) log(2*2*(5+4)) }
+
         return { kind: "FunctionCaller", name, params, body } as FunctionCaller;
     }
 
@@ -234,12 +217,10 @@ export default class Parser {
         this.eat();
 
         while (this.at().type != TokenType.CloseParen) {
-
             if (this.memory.get(this.at().value))
                 params.push(this.memory.get(this.eat().value));
             else
                 params.push(this.eat().value);
-
         }
 
         // remove closeParen
@@ -254,9 +235,8 @@ export default class Parser {
             if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memory.get(this.at().value))
                 // update varible value
                 this.parse_varible_expr();
-            else {
+            else
                 body.push(this.parse_expr());
-            }
 
         }
 
@@ -282,14 +262,18 @@ export default class Parser {
 
                 // if top condition is false
                 if (paramResult == false) {
+
                     if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memory.get(this.at().value))
                         // update varible value or define varible
                         this.parse_varible_expr();
+
                     else
                         body.push(this.parse_expr());
-                } else
+
+                } else {
                     // remove extra tokens
                     this.eat();
+                }
 
             }
 
