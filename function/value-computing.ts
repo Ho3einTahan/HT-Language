@@ -1,8 +1,7 @@
-import { Memory } from "../parser.ts";
+import { MemoryVAR } from "../class/memory-var.ts";
 import { BinaryExpr, NumericLiteral, Expr, FunctionCaller, LogExpr, Identifire, conditionalExpr } from "../ast.ts";
-import { type } from "node:os";
 
-export function valueComputing(ast: Expr, memory: Memory) {
+export function valueComputing(ast: Expr, memory: MemoryVAR) {
 
     if (ast.kind == 'NumericLiteral') {
         const NumericAST = ast as NumericLiteral;
