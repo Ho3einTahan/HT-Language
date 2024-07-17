@@ -1,7 +1,8 @@
 import { MemoryVAR } from "../class/memory-var.ts";
 import { BinaryExpr, NumericLiteral, Expr, FunctionCaller, LogExpr, Identifire, conditionalExpr } from "../ast.ts";
+import { MemoryFUNC } from "../class/memory-func.ts";
 
-export function valueComputing(ast: Expr, memory: MemoryVAR) {
+export function valueComputing(ast: Expr, memoryVAR: MemoryVAR, memoryFUNC: MemoryFUNC) {
 
     if (ast.kind == 'NumericLiteral') {
         const NumericAST = ast as NumericLiteral;
@@ -14,8 +15,8 @@ export function valueComputing(ast: Expr, memory: MemoryVAR) {
     else if (ast.kind === 'BinaryExpr') {
         const BinaryAST = ast as BinaryExpr;
 
-        const left = valueComputing(BinaryAST.left, memory);
-        const right = valueComputing(BinaryAST.right, memory);
+        const left = valueComputing(BinaryAST.left, memoryVAR, memoryFUNC);
+        const right = valueComputing(BinaryAST.right, memoryVAR, memoryFUNC);
 
         switch (BinaryAST.operator) {
             case '+':
@@ -41,16 +42,14 @@ export function valueComputing(ast: Expr, memory: MemoryVAR) {
         return {};
     }
     else if (ast.kind == "ConditionalExpr") {
-        let result: Array<Expr> = [];
-
         const conditionalAst = ast as conditionalExpr;
 
-        conditionalAst.body.forEach(conditional => {
+        conditionalAst.body.forEach(conditionalExpr => {
 
-            const valueCompute = valueComputing(conditional, memory);
+            const valueCompute = valueComputing(conditionalExpr, memoryVAR, memoryFUNC);
 
-            if (JSON.stringify(valueCompute) != '{}')
-                result.push(valueCompute);
+            if (JSON.stringify(valueCompute) != '{}' && valueCompute != undefined)
+                console.log(valueCompute);
 
         });
 
@@ -58,17 +57,5 @@ export function valueComputing(ast: Expr, memory: MemoryVAR) {
         // let a=12 let b=16  if(a>b || b==15){a=15} else { a=20 log(2*2) let a=12 let b=16  if(a>b || b==15){a=15} else { a=20 log(2*2)} log(a) } log(a)
 
         return {};
-    }
-    else if (ast.kind == 'FunctionCaller') {
-        let result: Array<any> = [];
-
-        const FunctionCallerAst = ast as FunctionCaller;
-
-        FunctionCallerAst.body.forEach(expr => {
-            result.push(valueComputing(expr, memory));
-        });
-
-        //  func asd(a,b){ let a=12+11 12+13 log('1'+'2',12+13,'1'+15,12+14+15)}
-        return result.join(' ');
     }
 }
