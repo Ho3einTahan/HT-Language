@@ -1,6 +1,6 @@
-import { MemoryVAR } from "../class/memory-var.ts";
-import { BinaryExpr, NumericLiteral, Expr, FunctionCaller, LogExpr, Identifire, conditionalExpr } from "../ast.ts";
-import { MemoryFUNC } from "../class/memory-func.ts";
+import { MemoryVAR } from "../memory/memory-var.ts";
+import { BinaryExpr, NumericLiteral, Expr, LogExpr, Identifire, conditionalExpr } from "../ast/ast.ts";
+import { MemoryFUNC } from "../memory/memory-func.ts";
 
 export function valueComputing(ast: Expr, memoryVAR: MemoryVAR, memoryFUNC: MemoryFUNC) {
 

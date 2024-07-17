@@ -1,11 +1,25 @@
 let a=10
 let b=20
-if(a>b){
+
+if(b>a){
 
 log('ok')
 
 }
-else{
+if(a==20){
+    100-30
+    let cb=12
+    log(cb)
+    log(a)
+    func ali(a,b){
+        log('hello')
+        if(2==12){
+            log('ddd')
+        }
+    }
+
+    ali()
+
 log(a)
 
 }
