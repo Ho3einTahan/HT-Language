@@ -2,12 +2,15 @@ import { Stmt, Program, NumericLiteral, Expr, Identifire, VaribleLiteral, Functi
 import { tokenize, Token, TokenType } from "./lexer.ts";
 import { valueComputing } from "./function/value-computing.ts";
 import { MemoryVAR } from "./class/memory-var.ts";
+import { MemoryFUNC } from "./class/memory-func.ts";
 
 export default class Parser {
 
     private tokens: Token[] = [];
 
-    public memory = new MemoryVAR();
+    public memoryVAR = new MemoryVAR();
+
+    public memoryFUNC = new MemoryFUNC();
 
     private not_eof(): boolean {
         return this.tokens[0]?.type !== undefined && this.tokens[0].type !== TokenType.EOF;
@@ -52,13 +55,13 @@ export default class Parser {
         // if varibleName  exists in memory
         // let a=10
         // a=10
-        if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memory.get(this.at().value)) {
+        if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memoryVAR.get(this.at().value)) {
             return this.parse_varible_expr();
         }
         else if (this.at().type == TokenType.Number) {
             return this.parse_additive_expr();
         }
-        else if (this.at().type == TokenType.Func) {
+        else if (this.at().type == TokenType.Func || this.memoryFUNC.get_FUNC_VALUE(this.at().value)) {
             return this.parse_function_expr();
         }
         else if (this.at().type == TokenType.Log) {
@@ -68,6 +71,8 @@ export default class Parser {
             return this.parse_conditional_expr();
         }
         else {
+            console.log('abbas');
+            console.log(this.at());
             return this.parse_conditional_expr();
         }
     }
@@ -98,48 +103,70 @@ export default class Parser {
         let body: Expr[] = [];
         let params = new Array<string>;
 
-        // remove KEYWORD func
-        this.eat();
+        if (this.at().type == TokenType.Func) {
 
-        name = this.parse_primary_expr();
-
-        if (this.at().type == TokenType.OpenParen) {
-
-            // remove openParen
+            // remove KEYWORD func
             this.eat();
 
-            // get  params
-            while (this.tokens[1].value == ',' || this.at().value == ',') {
+            name = this.eat().value;
 
-                if (this.at().value == ',') {
-                    // remove ',' charecter
-                    this.eat();
+            if (this.at().type == TokenType.OpenParen) {
+
+                // remove openParen
+                this.eat();
+
+                // get  params
+                while (this.tokens[1].value == ',' || this.at().value == ',') {
+
+                    if (this.at().value == ',') {
+                        // remove ',' charecter
+                        this.eat();
+                    }
+
+                    params.push(this.eat().value);
                 }
 
-                params.push(this.eat().value);
+                // remove closeParen
+                this.eat();
             }
+
+            if (this.at().type == TokenType.OpenBracket) {
+
+                // remove openBracket
+                this.eat();
+
+                while (this.at().type != TokenType.CloseBracket) {
+                    body.push(this.parse_expr());
+                }
+
+                // remove closeBracket
+                this.eat();
+            }
+        }
+        else if (this.memoryFUNC.get_FUNC_VALUE(this.at().value)) {
+
+            const body = this.memoryFUNC.get_FUNC_VALUE(this.eat().value);
+
+            body.forEach(funcExpr => {
+                valueComputing(funcExpr, this.memoryVAR, this.memoryFUNC);
+            });
+
+
+            // remove openParen 
+            this.eat();
 
             // remove closeParen
             this.eat();
-        }
 
-        if (this.at().type == TokenType.OpenBracket) {
-
-            // remove openBracket
-            this.eat();
-
-            while (this.at().type != TokenType.CloseBracket) {
-                body.push(this.parse_expr());
-            }
-
-            // remove closeBracket
-            this.eat();
         }
 
         //  func asd(a,b){ let a=12+11 12+13 log((12+12)*2+5+(3+5)) }
         // func asd(a,b){ let a=12+11 12+13 log((12+12)*2+5+(3+5)) log(10+15) log(2*2*(5+4)) }
 
-        return { kind: "FunctionCaller", name, params, body } as FunctionCaller;
+        this.memoryFUNC.define_FUNCTION(name, body, 'func');
+
+        // return { kind: "FunctionCaller", name, params, body } as FunctionCaller;
+        return {} as Stmt;
     }
 
     // log('1'+'2')  log(1+2) log((2*2)+25+(32))
@@ -157,13 +184,13 @@ export default class Parser {
 
             while (this.not_eof() && this.at().type != TokenType.Log && this.at().type != TokenType.Const && this.at().type != TokenType.Let && this.at().type != TokenType.CloseBracket) {
 
-                if (this.at().type == TokenType.Func) {
+                if (this.at().type == TokenType.Func || this.at().type == TokenType.IF || this.at().type == TokenType.ELSE || this.at().type == TokenType.ElseIf) {
                     break;
                 }
 
-                if (this.memory.get(this.at().value))
+                if (this.memoryVAR.get(this.at().value))
                     // set varible value
-                    params.push(this.memory.get(this.eat().value));
+                    params.push(this.memoryVAR.get(this.eat().value));
                 else
                     // get second param 
                     params.push(this.eat().value);
@@ -197,9 +224,9 @@ export default class Parser {
             value = this.parse_additive_expr();
         }
 
-        const varibleValue = valueComputing(value, this.memory);
+        const varibleValue = valueComputing(value, this.memoryVAR, this.memoryFUNC);
 
-        this.memory.defineVarible(name, varibleValue, 'string');
+        this.memoryVAR.defineVarible(name, varibleValue, 'string');
 
         return {} as Stmt;
     }
@@ -217,8 +244,8 @@ export default class Parser {
         this.eat();
 
         while (this.at().type != TokenType.CloseParen) {
-            if (this.memory.get(this.at().value))
-                params.push(this.memory.get(this.eat().value));
+            if (this.memoryVAR.get(this.at().value))
+                params.push(this.memoryVAR.get(this.eat().value));
             else
                 params.push(this.eat().value);
         }
@@ -232,7 +259,7 @@ export default class Parser {
         while (this.at().type != TokenType.CloseBracket) {
 
             // if this.at().value exist in memory update varible value
-            if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memory.get(this.at().value))
+            if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memoryVAR.get(this.at().value))
                 // update varible value
                 this.parse_varible_expr();
             else
@@ -243,7 +270,7 @@ export default class Parser {
         // remove closeBracket
         this.eat();
 
-        const paramResult: boolean = eval(params.join(''));
+        let paramResult: boolean = eval(params.join(''));
 
         if (this.at().type == TokenType.ELSE) {
 
@@ -262,8 +289,7 @@ export default class Parser {
 
                 // if top condition is false
                 if (paramResult == false) {
-
-                    if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memory.get(this.at().value))
+                    if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memoryVAR.get(this.at().value))
                         // update varible value or define varible
                         this.parse_varible_expr();
 
@@ -280,7 +306,13 @@ export default class Parser {
             // remove closeBracket
             this.eat();
 
+            if (paramResult == false)
+                paramResult = true;
+
         }
+
+        if (paramResult == false)
+            body = [];
 
         return { kind: "ConditionalExpr", params, paramResult, body } as conditionalExpr;
     }
@@ -291,10 +323,10 @@ export default class Parser {
         const tk = this.at().type;
 
         // let c=a*b
-        if (this.memory.get(this.at().value)) {
+        if (this.memoryVAR.get(this.at().value)) {
             return {
                 kind: "NumericLiteral",
-                value: parseFloat(this.memory.get(this.eat().value))
+                value: parseFloat(this.memoryVAR.get(this.eat().value))
             } as NumericLiteral;
         }
         else {
