@@ -11,6 +11,8 @@ export enum TokenType {
     Identifier,
     Let,
     Const,
+    Bool,
+    String,
     Func,
     Log,
     BinaryOperator,
@@ -32,6 +34,9 @@ export enum TokenType {
 const KEYWORDS: Record<string, TokenType> = {
     let: TokenType.Let,
     const: TokenType.Const,
+    bool: TokenType.Bool,
+    string: TokenType.String,
+    number: TokenType.Number,
     func: TokenType.Func,
     log: TokenType.Log,
     if: TokenType.IF,
