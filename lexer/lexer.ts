@@ -11,6 +11,7 @@ export enum TokenType {
     Identifier,
     Let,
     Const,
+    Int,
     Bool,
     String,
     Func,
@@ -36,7 +37,7 @@ const KEYWORDS: Record<string, TokenType> = {
     const: TokenType.Const,
     bool: TokenType.Bool,
     string: TokenType.String,
-    number: TokenType.Number,
+    int: TokenType.Int,
     func: TokenType.Func,
     log: TokenType.Log,
     if: TokenType.IF,
@@ -139,7 +140,7 @@ export function tokenize(sourceCode: string): Token[] {
                     tokens.push(token(ident, TokenType.Identifier));
                 }
             }
-            else if (src[0] == ',') {
+            else if (src[0] == ',' || src[0] == ':') {
                 tokens.push(token(src.shift(), TokenType.Identifier));
             }
             else if (isskippable(src[0])) {
