@@ -1,6 +1,6 @@
 import Parser from "../parser.ts";
 import { TokenType } from "../lexer/lexer.ts";
-import { Expr, conditionalExpr } from "../ast.ts";
+import { Expr, conditionalExpr } from "../ast/ast.ts";
 import { parse_varible_expr } from "./varible-expr.ts";
 
 
