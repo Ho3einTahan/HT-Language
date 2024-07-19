@@ -37,6 +37,17 @@ export function valueComputing(ast: Expr, memoryVAR: MemoryVAR, memoryFUNC: Memo
 
         let params = logExpr.params;
 
+
+        params.forEach((param, index) => {
+
+            if (memoryVAR.get(param)) {
+                // set varible value
+                params[index]=memoryVAR.get(param);
+            }
+
+        });
+
+        
         console.log(eval(params.join('')));
 
         return {};
