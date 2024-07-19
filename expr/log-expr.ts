@@ -1,6 +1,6 @@
 import Parser from "../parser.ts";
 import { TokenType } from "../lexer/lexer.ts";
-import { LogExpr } from "../ast.ts";
+import { LogExpr } from "../ast/ast.ts";
 
 // log('1'+'2')  log(1+2) log((2*2)+25+(32))
 export function parse_log_expr(parser: Parser) {
@@ -17,16 +17,12 @@ export function parse_log_expr(parser: Parser) {
 
         while (parser.not_eof() && parser.at().type != TokenType.Log && parser.at().type != TokenType.Const && parser.at().type != TokenType.Let && parser.at().type != TokenType.CloseBracket) {
 
-            if (parser.at().type == TokenType.Func || parser.at().type == TokenType.IF || parser.at().type == TokenType.ELSE || parser.at().type == TokenType.ElseIf) {
+            if (parser.at().type == TokenType.Func || parser.at().type == TokenType.IF || parser.at().type == TokenType.ELSE || parser.at().type == TokenType.ElseIf || parser.memoryFUNC.get_FUNC_VALUE(parser.at().value)) {
                 break;
             }
-
-            if (parser.memoryVAR.get(parser.at().value))
-                // set varible value
-                params.push(parser.memoryVAR.get(parser.eat().value));
-            else
-                // get second param 
-                params.push(parser.eat().value);
+            
+            // get second param 
+            params.push(parser.eat().value);
 
         }
 
