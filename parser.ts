@@ -44,6 +44,7 @@ export default class Parser {
 
         // parse until End Of File
         while (this.not_eof()) {
+            
             const expr = this.parse_Stmt();
 
             if (JSON.stringify(expr) != '{}') {
@@ -53,19 +54,23 @@ export default class Parser {
         return program;
     }
 
+
     private parse_Stmt(): Stmt {
         return this.parse_expr();
     }
 
+
     public parse_expr(): Expr {
+
         if (!this.tokens.length) {
             throw new Error('Unexpected end of input');
         }
 
+
         if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memoryVAR.get(this.at().value)) {
             return parse_varible_expr(this);
         }
-        else if (this.at().type == TokenType.Number) {
+        else if (this.at().type == TokenType.Number || this.at().value == '(') {
             return parse_additive_expr(this);
         }
         else if (this.at().type == TokenType.Func || this.memoryFUNC.get_FUNC_VALUE(this.at().value)) {
@@ -82,47 +87,53 @@ export default class Parser {
         }
     }
 
+
     // primaryExpr
     public parse_primary_expr(): Expr {
+
         const tk = this.at().type;
 
-        if (this.memoryVAR.get(this.at().value)) {
-            return {
-                kind: "NumericLiteral",
-                value: parseFloat(this.memoryVAR.get(this.eat().value))
-            } as NumericLiteral;
-        } else {
+        if (this.memoryVAR.get(this.at().value))
+            return { kind: "NumericLiteral", value: parseFloat(this.memoryVAR.get(this.eat().value)) } as NumericLiteral;
+
+        else {
+
             switch (tk) {
                 case TokenType.Identifier:
-                    return {
-                        kind: "Identifire",
-                        symbol: this.eat().value
-                    } as Identifire;
+                    return { kind: "Identifire", symbol: this.eat().value } as Identifire;
 
                 case TokenType.Number:
-                    return {
-                        kind: "NumericLiteral",
-                        value: parseFloat(this.eat().value)
-                    } as NumericLiteral;
+                    return { kind: "NumericLiteral", value: parseFloat(this.eat().value) } as NumericLiteral;
+
 
                 case TokenType.OpenParen:
+                    // remove openParen
                     this.eat();
-                    return this.parse_primary_expr();
 
-                case TokenType.CloseParen:
-                    this.eat();
-                    return this.parse_primary_expr();
-                // KEYWORDS
+                    const expr = this.parse_expr();
+
+                    if (this.at().type === TokenType.CloseParen) {
+                        // remove closeParen
+                        this.eat();
+                    } else {
+                        throw new Error('Expected closing parenthesis');
+                    }
+
+                    return expr;
+
                 case TokenType.Let:
                 case TokenType.Const:
-                    return {
-                        kind: 'VaribleLiteral',
-                        type: this.eat().value
-                    } as VaribleLiteral;
+                case TokenType.String:
+                case TokenType.Int:
+                case TokenType.Bool:
+                    return { kind: 'VaribleLiteral', type: this.eat().value } as VaribleLiteral;
 
                 default:
                     throw new Error(`Unexpected token: ${this.tokens[0].value}`);
             }
+
         }
+
     }
+
 }
