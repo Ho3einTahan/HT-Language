@@ -1,4 +1,4 @@
-// https://github.com/Ho3einTahan/ht-language
+// https://github.com/Ho3einTahan/HT-Language
 // -----------------------------------------------------------
 // ---------------          LEXER          -------------------
 // ---  Responsible for producing tokens from the source   ---
@@ -14,6 +14,7 @@ export enum TokenType {
     Int,
     Bool,
     String,
+    List,
     Func,
     Log,
     BinaryOperator,
@@ -39,6 +40,7 @@ const KEYWORDS: Record<string, TokenType> = {
     string: TokenType.String,
     int: TokenType.Int,
     func: TokenType.Func,
+    list: TokenType.List,
     log: TokenType.Log,
     if: TokenType.IF,
     else: TokenType.ELSE,
