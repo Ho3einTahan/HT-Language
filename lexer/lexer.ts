@@ -9,6 +9,7 @@
 export enum TokenType {
     Number,
     Identifier,
+    //
     Let,
     Const,
     Int,
@@ -16,18 +17,25 @@ export enum TokenType {
     String,
     List,
     Func,
+    //
     Log,
+    //
     BinaryOperator,
     LogicalOperator,
-    // Equals,
+    //
     OpenParen,
     CloseParen,
+    //
     OpenBracket,
     CloseBracket,
+    //
+    openBrack,
+    closeBrack,
+    //
     IF,
     ELSE,
     ElseIf,
-    EOF, // end of file
+    EOF, // END OF FILE
 }
 
 /**
@@ -99,6 +107,12 @@ export function tokenize(sourceCode: string): Token[] {
             tokens.push(token(src.shift(), TokenType.OpenParen));
         } else if (src[0] == ")") {
             tokens.push(token(src.shift(), TokenType.CloseParen));
+        }
+        else if (src[0] == '[') {
+            tokens.push(token(src.shift(), TokenType.openBrack));
+        }
+        else if (src[0] == ']') {
+            tokens.push(token(src.shift(), TokenType.closeBrack));
         }
         else if (src[0] == '{') {
             tokens.push(token(src.shift(), TokenType.OpenBracket));
