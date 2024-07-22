@@ -1,4 +1,3 @@
-
 export type ListType = {
     type: String,
     body: Array<any>,
