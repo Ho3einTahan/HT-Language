@@ -7,6 +7,8 @@ import { parse_log_expr } from "./expr/log-expr.ts";
 import { parse_conditional_expr } from "./expr/conditional-expr.ts";
 import { parse_varible_expr } from "./expr/varible-expr.ts";
 import { MemoryVAR } from "./memory/memory-var.ts";
+import { parse_list_expr } from "./expr/list-expr.ts";
+import { MemoryList } from "./memory/memory-list.ts";
 
 export default class Parser {
 
@@ -15,6 +17,8 @@ export default class Parser {
     public memoryVAR = new MemoryVAR();
 
     public memoryFUNC = new MemoryFUNC();
+
+    public memoryLIST = new MemoryList();
 
     public not_eof(): boolean {
         return this.tokens[0]?.type !== undefined && this.tokens[0].type !== TokenType.EOF;
@@ -44,7 +48,7 @@ export default class Parser {
 
         // parse until End Of File
         while (this.not_eof()) {
-            
+
             const expr = this.parse_Stmt();
 
             if (JSON.stringify(expr) != '{}') {
@@ -70,6 +74,9 @@ export default class Parser {
         if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memoryVAR.get(this.at().value)) {
             return parse_varible_expr(this);
         }
+        else if(this.at().type==TokenType.List){
+        return parse_list_expr(this);
+        }
         else if (this.at().type == TokenType.Number || this.at().value == '(') {
             return parse_additive_expr(this);
         }
@@ -83,6 +90,7 @@ export default class Parser {
             return parse_conditional_expr(this);
         }
         else {
+            console.log(this.tokens);
             throw new Error(`Unexpected token: ${this.at().type}`);
         }
     }
