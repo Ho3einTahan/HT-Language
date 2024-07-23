@@ -1,7 +1,7 @@
 
 import Parser from "../parser.ts";
 import { TokenType } from "../lexer/lexer.ts";
-import { Stmt} from "../ast.ts";
+import { Stmt} from "../ast/ast.ts";
 import { parse_additive_expr } from "./additive-expr.ts";
 import { valueComputing } from "../function/value-computing.ts";
 
@@ -23,10 +23,11 @@ export function parse_varible_expr(parser: Parser) {
         operator = parser.eat().value;
         value = parse_additive_expr(parser);
     }
+    
 
-    const varibleValue = valueComputing(value, parser.memoryVAR, parser.memoryFUNC);
+    const varibleValue = valueComputing(value, parser.memoryVAR, parser.memoryFUNC,parser.memoryLIST);
 
-    parser.memoryVAR.defineVarible(name, varibleValue, 'string');
+    parser.memoryVAR.define_VARIABLE(name, varibleValue, 'string');
 
     return {} as Stmt;
 }
