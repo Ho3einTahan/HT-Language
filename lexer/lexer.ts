@@ -13,10 +13,13 @@ export enum TokenType {
     Let,
     Const,
     Int,
-    Bool,
     String,
     List,
     Func,
+    //
+    Bool,
+    True,
+    False,
     //
     Log,
     //
@@ -48,6 +51,8 @@ const KEYWORDS: Record<string, TokenType> = {
     string: TokenType.String,
     int: TokenType.Int,
     func: TokenType.Func,
+    true: TokenType.True,
+    false: TokenType.False,
     list: TokenType.List,
     log: TokenType.Log,
     if: TokenType.IF,
@@ -141,7 +146,7 @@ export function tokenize(sourceCode: string): Token[] {
             } // Handle Identifier & Keyword Tokens.
             else if (isalpha(src[0]) || src[0] == "'") {
                 let ident = "";
-                while (src.length > 0 && isalpha(src[0]) || src[0] == "'") {
+                while (src.length > 0 && isalpha(src[0]) || isint(src[0]) || src[0] == "'") {
                     ident += src.shift();
                 }
 
