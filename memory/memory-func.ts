@@ -12,6 +12,10 @@ export class MemoryFUNC {
     public get_FUNCTION_VALUE(key: string) {
         return this.memory[key];
     }
+    
+    public isExist(key: string) {
+        return this.memory[key];
+    }
 
     public define_FUNCTION(key: string,value: FuncType): void {
         // this.memory['fName'] = value;
