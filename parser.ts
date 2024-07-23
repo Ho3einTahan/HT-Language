@@ -70,8 +70,7 @@ export default class Parser {
             throw new Error('Unexpected end of input');
         }
 
-
-        if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memoryVAR.get(this.at().value)) {
+        if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memoryVAR.isExist(this.at().value)) {
             return parse_varible_expr(this);
         }
         else if(this.at().type==TokenType.List){
@@ -80,7 +79,7 @@ export default class Parser {
         else if (this.at().type == TokenType.Number || this.at().value == '(') {
             return parse_additive_expr(this);
         }
-        else if (this.at().type == TokenType.Func || this.memoryFUNC.get_FUNC_VALUE(this.at().value)) {
+        else if (this.at().type == TokenType.Func || this.memoryFUNC.isExist(this.at().value)) {
             return parse_function_expr(this);
         }
         else if (this.at().type == TokenType.Log) {
@@ -101,8 +100,8 @@ export default class Parser {
 
         const tk = this.at().type;
 
-        if (this.memoryVAR.get(this.at().value))
-            return { kind: "NumericLiteral", value: parseFloat(this.memoryVAR.get(this.eat().value)) } as NumericLiteral;
+        if (this.memoryVAR.isExist(this.at().value))
+            return { kind: "NumericLiteral", value: parseFloat(this.memoryVAR.get_VARIABLE_VALUE(this.eat().value)) } as NumericLiteral;
 
         else {
 
