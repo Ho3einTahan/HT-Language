@@ -12,6 +12,10 @@ export class MemoryList {
         return this.memory[key];
     }
 
+    public isExist(key: string) {
+        return this.memory[key];
+    }
+
     public define_LIST(key: string,value: ListType): void {
         // this.MemoryList['vLIST'] = value;
         this.memory[key] = value;
