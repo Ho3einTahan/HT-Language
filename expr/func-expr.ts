@@ -4,9 +4,6 @@ import { Expr, Stmt } from "../ast/ast.ts";
 import { TokenType } from "../lexer/lexer.ts";
 import { valueComputing } from "../function/value-computing.ts";
 import { FuncType, MemoryFUNC } from "../memory/memory-func.ts";
-import { MemoryVAR } from "../memory/memory-var.ts";
-import process from "node:process";
-
 // func unit (a,b){ let a=20 a=2+12 log(a)}
 export function parse_function_expr(parser: Parser) {
     let type: string = '';
@@ -30,7 +27,7 @@ export function parse_function_expr(parser: Parser) {
             while (parser.tokens[1].value == ',' || parser.at().value == ',') {
 
                 if (parser.at().value == ',')
-                    // remove ',' charecter
+                    // remove ',' character
                     parser.eat();
 
                 const param = parser.eat().value;
@@ -47,7 +44,7 @@ export function parse_function_expr(parser: Parser) {
 
             if (parser.at().value == ':') {
 
-                // remove : charecter
+                // remove : character
                 parser.eat();
 
                 // get func type
@@ -89,7 +86,7 @@ export function parse_function_expr(parser: Parser) {
                 while (parser.memoryVAR.isExist(parser.at().value) || parser.at().value == ',') {
 
                     if (parser.at().value == ',') {
-                        // remove ',' charecter
+                        // remove ',' character
                         parser.eat();
                     }
 
