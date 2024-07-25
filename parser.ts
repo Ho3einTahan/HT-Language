@@ -14,11 +14,11 @@ export default class Parser {
 
     public tokens: Token[] = [];
 
-    public memoryVAR = new MemoryVAR();
+    public memoryVAR = MemoryVAR.getInstance();
 
-    public memoryFUNC = new MemoryFUNC();
+    public memoryFUNC =  MemoryFUNC.getInstance();
 
-    public memoryLIST = new MemoryList();
+    public memoryLIST = MemoryList.getInstance();
 
     public not_eof(): boolean {
         return this.tokens[0]?.type !== undefined && this.tokens[0].type !== TokenType.EOF;
