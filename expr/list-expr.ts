@@ -197,12 +197,6 @@ export function parse_list_expr(parser: Parser): Expr {
         parser.memoryLIST.define_LIST(name, { type, body: bodyList_OF_ListBool } as ListType);
         console.log(name, { type, body: bodyList_OF_ListBool } as ListType);
     }
-
-    // if we don't have a type
-    // if (type) {
-
-    // }
-
     return {} as Expr;
 
 }
