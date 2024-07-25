@@ -23,9 +23,9 @@ export function parse_additive_expr(parser: Parser): Expr {
 
 function parse_multiplicative_expr(parser: Parser) {
 
-    let left = parser.parse_primary_expr();
+    let left = parser.parse_primary_expr(); // 2+5*(4)+5*(((2)))
 
-    while (parser.not_eof() && (parser.at().value === '*' || parser.at().value === '/')) {
+    while (parser.not_eof() && (parser.at().value === '*' || parser.at().value === '/' || parser.at().value === '%' || parser.at().value === '^')) {
 
         const operator = parser.eat().value;
 
