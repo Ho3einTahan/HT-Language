@@ -1,8 +1,9 @@
 import { MemoryVAR } from "../memory/memory-var.ts";
 import { BinaryExpr, NumericLiteral, Expr, LogExpr, Identifire, conditionalExpr } from "../ast/ast.ts";
 import { MemoryFUNC } from "../memory/memory-func.ts";
+import { MemoryList } from "../memory/memory-list.ts";
 
-export function valueComputing(ast: Expr, memoryVAR: MemoryVAR, memoryFUNC: MemoryFUNC) {
+export function valueComputing(ast: Expr, memoryVAR: MemoryVAR, memoryFUNC: MemoryFUNC, memoryLIST: MemoryList) {
 
     if (ast.kind == 'NumericLiteral') {
         const NumericAST = ast as NumericLiteral;
@@ -15,8 +16,8 @@ export function valueComputing(ast: Expr, memoryVAR: MemoryVAR, memoryFUNC: Memo
     else if (ast.kind === 'BinaryExpr') {
         const BinaryAST = ast as BinaryExpr;
 
-        const left = valueComputing(BinaryAST.left, memoryVAR, memoryFUNC);
-        const right = valueComputing(BinaryAST.right, memoryVAR, memoryFUNC);
+        const left = valueComputing(BinaryAST.left, memoryVAR, memoryFUNC, memoryLIST);
+        const right = valueComputing(BinaryAST.right, memoryVAR, memoryFUNC, memoryLIST);
 
         switch (BinaryAST.operator) {
             case '+':
@@ -37,17 +38,6 @@ export function valueComputing(ast: Expr, memoryVAR: MemoryVAR, memoryFUNC: Memo
 
         let params = logExpr.params;
 
-
-        params.forEach((param, index) => {
-
-            if (memoryVAR.get(param)) {
-                // set varible value
-                params[index]=memoryVAR.get(param);
-            }
-
-        });
-
-        
         console.log(eval(params.join('')));
 
         return {};
@@ -57,7 +47,7 @@ export function valueComputing(ast: Expr, memoryVAR: MemoryVAR, memoryFUNC: Memo
 
         conditionalAst.body.forEach(conditionalExpr => {
 
-            const valueCompute = valueComputing(conditionalExpr, memoryVAR, memoryFUNC);
+            const valueCompute = valueComputing(conditionalExpr, memoryVAR, memoryFUNC, memoryLIST);
 
             if (JSON.stringify(valueCompute) != '{}' && valueCompute != undefined)
                 console.log(valueCompute);
