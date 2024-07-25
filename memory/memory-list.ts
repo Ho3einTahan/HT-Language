@@ -6,9 +6,20 @@ export type ListType = {
 // List Memory
 export class MemoryList {
 
+    private static instance: MemoryList;
+    
+    private constructor() { }
+
+    public static getInstance(): MemoryList {
+        if (!MemoryList.instance) {
+            MemoryList.instance = new MemoryList();
+        }
+        return MemoryList.instance;
+    }
+
     private memory: Record<string, ListType> = {};
 
-    public get_LIST_VALUES(key: string) {
+    public get_LIST_VALUE(key: string) {
         return this.memory[key];
     }
 
