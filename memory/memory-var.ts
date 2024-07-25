@@ -1,6 +1,17 @@
 
 // Varible Memory
 export class MemoryVAR {
+    
+    private static instance: MemoryVAR;
+    
+    private constructor() { }
+
+    public static getInstance(): MemoryVAR {
+        if (!MemoryVAR.instance) {
+            MemoryVAR.instance = new MemoryVAR();
+        }
+        return MemoryVAR.instance;
+    }
 
     private memory: Record<string, any> = {};
 
