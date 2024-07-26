@@ -18,24 +18,22 @@ export function parse_log_expr(parser: Parser) {
         while (parser.not_eof() && parser.at().type != TokenType.Log && parser.at().type != TokenType.Const && parser.at().type != TokenType.Let && parser.at().type != TokenType.CloseBracket) {
 
             if (parser.at().type == TokenType.Func || parser.at().type == TokenType.IF || parser.at().type == TokenType.ELSE || parser.at().type == TokenType.ElseIf || parser.memoryFUNC.isExist(parser.at().value)) break;
-        
-            // get other param 
-            if (parser.memoryVAR.isExist(parser.at().value)) {
-                // set Variable value
-                params.push(parser.memoryVAR.get_VARIABLE_VALUE(parser.eat().value));
-            }
-            else if (parser.memoryLIST.isExist(parser.at().value)) {
-                // set List value
-                const body= parser.memoryLIST.get_LIST_VALUE(parser.eat().value).body;
 
-                body.forEach((element)=>{
-                    if(element!=',') {
-                        params.push(element);
-                    }
+            // get other param 
+            if (parser.memoryVAR.isExist(parser.at().value)) params.push(parser.memoryVAR.get_VARIABLE_VALUE(parser.eat().value));
+
+            else if (parser.memoryLIST.isExist(parser.at().value)) {
+
+                // get List body
+                const body = parser.memoryLIST.get_LIST_VALUE(parser.eat().value).body;
+
+                body.forEach((listItem) => {
+                    params.push(listItem);
                 });
 
             }
-            else{
+
+            else {
                 params.push(parser.eat().value);
             }
 
