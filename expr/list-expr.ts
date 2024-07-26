@@ -8,21 +8,12 @@ export function parse_list_expr(parser: Parser): Expr {
 
     let name, type: String = '';
 
-    let body_String: Array<String> = [];
-    let body_Bool: Array<boolean> = [];
-    let body_Int: Array<number> = [];
-    //
-    let bodyList_OF_ListString: Array<Array<String>> = [];
-    let bodyList_OF_ListBool: Array<Array<Boolean>> = [];
-    let bodyList_OF_ListInt: Array<Array<number>> = [];
+    let bodyList: Array<any> = [];
 
-
-    // if we had a type
     while (parser.at().value == ':' || parser.at().type == TokenType.List) {
-        if (parser.at().value == ':') {
-            // remove : charecter
-            parser.eat();
-        }
+
+        // remove : character
+        if (parser.at().value == ':') parser.eat();
 
         // get type
         type += parser.eat().value;
@@ -30,134 +21,190 @@ export function parse_list_expr(parser: Parser): Expr {
     }
 
 
-    // remove name of List
-    name= parser.eat().value;
+    // get name of List
+    name = parser.eat().value;
 
-    // remove = charecter
-    parser.eat();
-
-    // [ => openBrack
-    // remove openBrack
+    // remove = character
     parser.eat();
 
     // ] => closeBrack
-    while (parser.at().type != TokenType.closeBrack) {
+    while (parser.at().type != TokenType.closeBrack && parser.at().type != TokenType.Log && parser.at().type != TokenType.Func) {
 
         switch (type) {
+
             case 'listint':
-                if (parser.at().type == TokenType.Number)
-                    body_Int.push(parseInt(parser.eat().value));
-                else
+
+                // [ => openBrack
+                // add openBrack to List
+                if (parser.at().type == TokenType.openBrack) bodyList.push(parser.eat().value);
+
+                // add , character
+                if (parser.at().value == ',') bodyList.push(parser.eat().value);
+
+                if (parser.at().type == TokenType.Number) bodyList.push(parseInt(parser.eat().value));
+
+                else {
                     throw Error('Pleas Enter Int type to the ====> LIST ');
+                }
+
                 break;
 
             case 'liststring':
-                if (parser.at().type == TokenType.Identifier)
-                    body_String.push(parser.eat().value);
-                else
+
+                // [ => openBrack
+                // add openBrack to List
+                if (parser.at().type == TokenType.openBrack) bodyList.push(parser.eat().value);
+
+
+                // add , character
+                if (parser.at().value == ',') bodyList.push(parser.eat().value);
+
+                // remove '' character At Start AND End OF Token
+                if (parser.at().type == TokenType.Identifier) bodyList.push(parser.eat().value.slice(1, -1));
+
+                else {
                     throw Error('Pleas Enter String type to the ====> LIST ');
+                }
+
                 break;
 
             case 'listbool':
-                if (parser.at().type == TokenType.True || parser.at().type == TokenType.False)
-                    body_Bool.push(stringToBool(parser.eat().value));
-                else
+
+                // [ => openBrack
+                // add openBrack to List
+                if (parser.at().type == TokenType.openBrack) bodyList.push(parser.eat().value);
+
+
+                // add , character
+                if (parser.at().value == ',') bodyList.push(parser.eat().value);
+
+
+                if (parser.at().type == TokenType.True || parser.at().type == TokenType.False) bodyList.push(stringToBool(parser.eat().value));
+
+                else {
                     throw Error('Pleas Enter Bool type to the ====> LIST ');
+                }
+
                 break;
 
             case 'listlistint':
-                if (parser.at().type == TokenType.List) {
 
-                    // remove openBrack
-                    parser.eat();
+                // remove openBrack
+                if (parser.at().type == TokenType.openBrack || parser.at().value == ',') parser.eat();
 
-                    let body: Array<number> = [];
+                // remove openBrack
+                if (parser.at().type == TokenType.openBrack || parser.at().value == ',') parser.eat();
 
-                    while (true) {
+                else {
+                    throw Error('Pleas Enter List OF List:Int ');
+                }
 
-                        while (parser.at().type != TokenType.closeBrack) {
-                            body.push(parseInt(parser.eat().value));
+                if (parser.at().type == TokenType.Number) {
+
+                    let body: Array<any> = [];
+
+                    while (parser.at().type != TokenType.closeBrack && parser.at().type != TokenType.openBrack) {
+
+                        if (parser.at().value == ',') parser.eat();
+
+                        // remove '' character At Start AND End OF Token
+                        if (parser.at().type == TokenType.Number) body.push(parseInt(parser.eat().value));
+                        else {
+                            throw Error('Pleas Enter List OF List:Int ');
                         }
-
-                        // remove closeBrack
-                        // ] => closeBrack
-                        parser.eat();
-
-                        bodyList_OF_ListInt.push(body);
-                        body = [];
-
-                        if (parser.at().type == TokenType.closeBrack) break;
 
                     }
 
+                    bodyList.push(body);
+
+                    if (parser.at().type == TokenType.closeBrack) parser.eat();
+
+                    if (parser.at().type == TokenType.closeBrack) parser.eat();
 
                 }
-                else
+                else {
                     throw Error('Pleas Enter List OF List:Int ');
+                }
+
                 break;
 
             case 'listliststring':
 
-                if (parser.at().type == TokenType.List) {
+                // remove openBrack
+                if (parser.at().type == TokenType.openBrack || parser.at().value == ',') parser.eat();
 
-                    // remove openBrack
-                    parser.eat();
+                // remove openBrack
+                if (parser.at().type == TokenType.openBrack || parser.at().value == ',') parser.eat();
 
-                    let body: Array<String> = [];
+                else {
+                    throw Error('Pleas Enter List OF List:String ');
+                }
 
-                    while (true) {
+                if (parser.at().type == TokenType.Identifier) {
 
-                        while (parser.at().type != TokenType.closeBrack) {
-                            body.push(parser.eat().value);
-                        }
+                    let body: Array<any> = [];
 
-                        // remove closeBrack
-                        // ] => closeBrack
-                        parser.eat();
+                    while (parser.at().type != TokenType.closeBrack && parser.at().type != TokenType.openBrack) {
 
-                        bodyList_OF_ListString.push(body);
-                        body = [];
+                        if (parser.at().value == ',') parser.eat();
 
-                        if (parser.at().type == TokenType.closeBrack) break;
+                        // remove '' character At Start AND End OF Token
+                        body.push(parser.eat().value.slice(1, -1));
 
                     }
 
+                    bodyList.push(body);
+
+                    if (parser.at().type == TokenType.closeBrack) parser.eat();
+
+                    if (parser.at().type == TokenType.closeBrack) parser.eat();
 
                 }
-                else
+
+                else {
                     throw Error('Pleas Enter List OF List:String ');
+                }
+
                 break;
 
             case 'listlistbool':
 
-                if (parser.at().type == TokenType.List) {
+                // remove openBrack
+                if (parser.at().type == TokenType.openBrack || parser.at().value == ',') parser.eat();
 
-                    // remove openBrack
-                    parser.eat();
+                // remove openBrack
+                if (parser.at().type == TokenType.openBrack || parser.at().value == ',') parser.eat();
 
-                    let body: Array<boolean> = [];
+                else {
+                    throw Error('Pleas Enter List OF List:Bool ');
+                }
 
-                    while (true) {
 
-                        while (parser.at().type != TokenType.closeBrack) {
-                            body.push(stringToBool(parser.eat().value));
-                        }
+                if (parser.at().type == TokenType.True || parser.at().type == TokenType.False) {
 
-                        // remove closeBrack
-                        // ] => closeBrack
-                        parser.eat();
+                    let body: Array<any> = [];
 
-                        bodyList_OF_ListBool.push(body);
-                        body = [];
+                    while (parser.at().type != TokenType.closeBrack && parser.at().type != TokenType.openBrack) {
 
-                        if (parser.at().type == TokenType.closeBrack) break;
+                        if (parser.at().value == ',') parser.eat();
+
+                        // remove '' character At Start AND End OF Token
+                        body.push(stringToBool(parser.eat().value));
 
                     }
 
+                    bodyList.push(body);
+
+                    if (parser.at().type == TokenType.closeBrack) parser.eat();
+
+                    if (parser.at().type == TokenType.closeBrack) parser.eat();
 
                 }
-                else
+
+                else {
                     throw Error('Pleas Enter List OF List:bool ');
+                }
+
                 break;
 
             default:
@@ -165,38 +212,20 @@ export function parse_list_expr(parser: Parser): Expr {
                 break;
         }
 
+
     }
 
 
-    // remove closeBrack
-    parser.eat();
+    if (bodyList.length > 0) {
 
-    if (body_Int.length > 0) {
+        // add closeBrack to List
+        if (parser.at().type == TokenType.closeBrack) bodyList.push(parser.eat().value)
 
-        parser.memoryLIST.define_LIST(name, { type, body: body_Int } as ListType);
-        console.log(name, { type, body: body_Int } as ListType);
-    }
-    else if (body_String.length > 0) {
-        parser.memoryLIST.define_LIST(name, { type, body: body_String } as ListType);
-        console.log(name, { type, body: body_String } as ListType);
-    }
-    else if (body_Bool.length > 0) {
-        parser.memoryLIST.define_LIST(name, { type, body: body_Bool } as ListType);
-        console.log(name, { type, body: body_Bool } as ListType);
-    }
-    else if (bodyList_OF_ListInt.length > 0) {
-        parser.memoryLIST.define_LIST(name, { type, body: bodyList_OF_ListInt } as ListType);
-        console.log(name, { type, body: bodyList_OF_ListInt } as ListType);
-    }
-    else if (bodyList_OF_ListString.length > 0) {
-        parser.memoryLIST.define_LIST(name, { type, body: bodyList_OF_ListString } as ListType);
-        console.log(name, { type, body: bodyList_OF_ListString } as ListType);
+        parser.memoryLIST.define_LIST(name, { type, body: bodyList } as ListType);
 
     }
-    else if (bodyList_OF_ListBool.length > 0) {
-        parser.memoryLIST.define_LIST(name, { type, body: bodyList_OF_ListBool } as ListType);
-        console.log(name, { type, body: bodyList_OF_ListBool } as ListType);
-    }
+
+
     return {} as Expr;
 
 }
