@@ -23,6 +23,8 @@ export enum TokenType {
     //
     Log,
     //
+    Enum,
+    //
     BinaryOperator,
     LogicalOperator,
     //
@@ -45,16 +47,22 @@ export enum TokenType {
  * Constant lookup for keywords and known identifiers + symbols.
  */
 const KEYWORDS: Record<string, TokenType> = {
+    //
+    enum: TokenType.Enum,
+    //
+    list: TokenType.List,
     let: TokenType.Let,
     const: TokenType.Const,
-    bool: TokenType.Bool,
-    string: TokenType.String,
     int: TokenType.Int,
+    string: TokenType.String,
+    bool: TokenType.Bool,
     func: TokenType.Func,
+    //
     true: TokenType.True,
     false: TokenType.False,
-    list: TokenType.List,
+    //
     log: TokenType.Log,
+    //
     if: TokenType.IF,
     else: TokenType.ELSE,
     elseif: TokenType.ElseIf,
