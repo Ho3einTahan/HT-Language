@@ -7,30 +7,40 @@ export type ListType = {
 export class MemoryList {
 
     private static instance: MemoryList;
-    
+
     private constructor() { }
 
     public static getInstance(): MemoryList {
-        if (!MemoryList.instance) {
-            MemoryList.instance = new MemoryList();
-        }
+
+        if (!MemoryList.instance) MemoryList.instance = new MemoryList();
+
         return MemoryList.instance;
+
     }
 
     private memory: Record<string, ListType> = {};
 
-    public get_LIST_VALUE(key: string) {
+    public get_BODY_OF_LIST(key: string) {
         return this.memory[key];
     }
 
-    public isExist(key: string) {
+    public isExist_NAME_OF_LIST(key: string) {
         return this.memory[key];
     }
 
-    public define_LIST(key: string,value: ListType): void {
+    public define_LIST(key: string, value: ListType): void {
         // this.MemoryList['vLIST'] = value;
         this.memory[key] = value;
     }
 
+
+    public define_FOR_ELELMENT_LIST(key: string, value: any): void {
+        // this.MemoryList['elementLIST'] = value;
+        this.memory[key] = value;
+    }
+
+    public remove_KEY_OF_ELEMENT_LIST() { }
+
+    public isExist_ELEMENT_OF_LIST() { }
 
 }
