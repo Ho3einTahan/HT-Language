@@ -40,6 +40,9 @@ export enum TokenType {
     IF,
     ELSE,
     ElseIf,
+    //
+    Symbol,
+    //
     EOF, // END OF FILE
 }
 
@@ -66,7 +69,6 @@ const KEYWORDS: Record<string, TokenType> = {
     if: TokenType.IF,
     else: TokenType.ELSE,
     elseif: TokenType.ElseIf,
-
 };
 
 // Reoresents a single token from the source-code.
@@ -169,8 +171,8 @@ export function tokenize(sourceCode: string): Token[] {
                     tokens.push(token(ident, TokenType.Identifier));
                 }
             }
-            else if (src[0] == ',' || src[0] == ':') {
-                tokens.push(token(src.shift(), TokenType.Identifier));
+            else if (src[0] == ',' || src[0] == ':' || src[0]=='.') {
+                tokens.push(token(src.shift(), TokenType.Symbol));
             }
             else if (isskippable(src[0])) {
                 // Skip uneeded chars.
