@@ -1,25 +1,26 @@
 
 // Varible Memory
 export class MemoryVAR {
-    
+
     private static instance: MemoryVAR;
-    
+
     private constructor() { }
 
     public static getInstance(): MemoryVAR {
-        if (!MemoryVAR.instance) {
-            MemoryVAR.instance = new MemoryVAR();
-        }
+
+        if (!MemoryVAR.instance) MemoryVAR.instance = new MemoryVAR();
+
         return MemoryVAR.instance;
+        
     }
 
     private memory: Record<string, any> = {};
 
-    public get_VARIABLE_VALUE(key: string) {
+    public get_VALUE_OF_VARIABLE_(key: string) {
         return this.memory[key];
     }
-   
-    public isExist(key: string) {
+
+    public isExist_NAME_OF_VARIABLE(key: string) {
         return this.memory[key];
     }
 
