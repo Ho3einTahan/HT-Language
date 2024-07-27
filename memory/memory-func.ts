@@ -8,23 +8,24 @@ export type FuncType = {
 export class MemoryFUNC {
 
     private static instance: MemoryFUNC;
-    
+
     private constructor() { }
 
     public static getInstance(): MemoryFUNC {
-        if (!MemoryFUNC.instance) {
-            MemoryFUNC.instance = new MemoryFUNC();
-        }
+
+        if (!MemoryFUNC.instance) MemoryFUNC.instance = new MemoryFUNC();
+
         return MemoryFUNC.instance;
+
     }
 
     private memory: Record<string, FuncType> = {};
 
-    public get_FUNCTION_VALUE(key: string) {
+    public get_VALUE_OF_FUNCTION_(key: string) {
         return this.memory[key];
     }
 
-    public isExist(key: string) {
+    public isExist_NAME_OF_FUNCTION(key: string) {
         return this.memory[key];
     }
 
