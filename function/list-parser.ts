@@ -1,6 +1,6 @@
 import { Program } from "../ast/ast.ts";
 import { HTL_LIST } from "../class/list.ts";
-import { Token, TokenType } from "../lexer/lexer.ts";
+import { Token, TokenType, tokenize } from "../lexer/lexer.ts";
 import { ListType } from "../memory/memory-list.ts";
 import Parser from "../parser.ts";
 
@@ -71,56 +71,25 @@ export class ListParser {
             // remove EndOfFile token
             parser.tokens.pop();
 
-            if (parser.at().type == TokenType.Log) {
+            // remove closeBracket
+            parser.tokens.pop();
 
-                let parens: Array<any> = [];
+            let forEachBodies: Array<Array<Token>> = [];
+            
+            array.forEach((item) => {
 
-                let logParams: Array<string> = [];
+                forEachBodies.push(parser.tokens.map((token) => {
+                    const newToken={value:token.value.replace('element', item),type:token.type} as Token;
+                    return newToken;
+                }));
 
-                // remove log KEYWORD
-                parser.eat();
+            });
 
-                // remove  openParen
-                parser.eat();
-
-                while (parser.at().type != TokenType.CloseParen || parens.length > 0) {
-
-                    if (parser.at().value == '(') {
-                        parens.push(parser.at().value);
-                    }
-
-                    if (parser.at().value == ')') {
-                        parens.pop();
-                    }
-
-                    if (parser.at().value == ',') {
-                        // remove , character
-                        parser.eat();
-                    }
-
-                    logParams.push(parser.eat().value);
-
-                }
-
-                // remove  closeParen
-                parser.eat();
-
-                array.forEach((arr) => {
-                    parser.tokens.push({ value: 'log', type: TokenType.Log } as Token);
-                    parser.tokens.push({ value: '(', type: TokenType.OpenParen });
-                    parser.tokens.push({ value: logParams.join('').replace(itemName, arr), type: TokenType.Identifier } as Token);
-                    parser.tokens.push({ value: ')', type: TokenType.CloseParen });
-
-                });
-
-
-            }
-
+            parser.tokens = forEachBodies.flat();
             // add EndOfFile token
             parser.tokens.push({ value: 'EndOfFile', type: TokenType.EOF });
 
-            // remove closeBracket
-            parser.eat();
+            // console.log(parser.tokens);
 
         }
 
