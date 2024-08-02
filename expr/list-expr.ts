@@ -2,6 +2,7 @@ import { Expr } from "../ast/ast.ts";
 import { TokenType } from "../lexer/lexer.ts";
 import Parser from "../parser.ts";
 import { ListType } from "../memory/memory-list.ts";
+import { ListParser } from "../function/list-parser.ts";
 
 
 export function parse_list_expr(parser: Parser): Expr {
@@ -28,7 +29,7 @@ export function parse_list_expr(parser: Parser): Expr {
     parser.eat();
 
     // ] => closeBrack
-    while (parser.at().type != TokenType.closeBrack && parser.at().type != TokenType.Log && parser.at().type != TokenType.Func) {
+    while (parser.at().type != TokenType.closeBrack && parser.at().type != TokenType.Log && parser.at().type != TokenType.Func && !parser.memoryLIST.hasList(name)) {
 
         switch (type) {
 
@@ -224,7 +225,13 @@ export function parse_list_expr(parser: Parser): Expr {
         parser.memoryLIST.define_LIST(name, { type, body: bodyList } as ListType);
 
     }
+    else {
 
+        const body = parser.memoryLIST.get_BODY_OF_LIST(name).body;
+
+        // use eval to remove openBrack AND closeBrack
+        const response = ListParser.parse(parser, eval(body.join('')));
+    }
 
     return {} as Expr;
 
