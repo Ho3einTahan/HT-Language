@@ -25,7 +25,7 @@ export class MemoryFUNC {
         return this.memory[key];
     }
 
-    public isExist_NAME_OF_FUNCTION(key: string) {
+    public hasFunction(key: string) {
         return this.memory[key];
     }
 
