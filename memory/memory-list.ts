@@ -24,7 +24,7 @@ export class MemoryList {
         return this.memory[key];
     }
 
-    public isExist_NAME_OF_LIST(key: string) {
+    public hasList(key: string) {
         return this.memory[key];
     }
 
@@ -33,14 +33,8 @@ export class MemoryList {
         this.memory[key] = value;
     }
 
-
-    public define_FOR_ELELMENT_LIST(key: string, value: any): void {
-        // this.MemoryList['elementLIST'] = value;
-        this.memory[key] = value;
+    public get_ELEMENT_OF_LIST(key: string):ListType{ 
+        return this.memory[key];
     }
-
-    public remove_KEY_OF_ELEMENT_LIST() { }
-
-    public isExist_ELEMENT_OF_LIST() { }
 
 }
