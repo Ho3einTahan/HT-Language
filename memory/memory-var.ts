@@ -15,19 +15,18 @@ export class MemoryVAR {
     }
 
     private memory: Record<string, any> = {};
-
-    public get_VALUE_OF_VARIABLE_(key: string) {
-        return this.memory[key];
-    }
-
-    public isExist_NAME_OF_VARIABLE(key: string) {
-        return this.memory[key];
-    }
-
+    
     public define_VARIABLE(key: string, value: any, type: string): void {
         // this.memory['vName'] = value;
         this.memory[key] = value;
     }
 
+    public get_VALUE_OF_VARIABLE(key: string) {
+        return this.memory[key];
+    }
+
+    public hasVariable(key: string) {
+        return this.memory[key];
+    }
 
 }
