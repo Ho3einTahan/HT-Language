@@ -37,19 +37,36 @@ export function parse_log_expr(parser: Parser) {
             }
             else if (parser.memoryLIST.hasList(parser.at().value)) {
 
-                // get body of list
-                const body = parser.memoryLIST.get_BODY_OF_LIST(parser.eat().value).body;
+                const listName = parser.eat().value;
 
+                // get body of list
+                const body = parser.memoryLIST.get_BODY_OF_LIST(listName).body;
+                const type = parser.memoryLIST.get_BODY_OF_LIST(listName).type;
                 // if it was a methode .  it will have a '.' character
                 if (parser.at().value == '.') {
 
                     parser.eat();
 
-                    params.push(ListParser.parse(parser, eval(body.join(''))));
+                    if (type == 'liststring') {
+
+                        const listAsString = body.map(token => {
+                            // Add quotes to non-symbol tokens
+                            if (token !== "[" && token !== "]" && token !== ",") {
+                                return `'${token}'`;
+                            }
+                            return token;
+                        });
+
+                        params.push(ListParser.parse(parser, eval(listAsString.join('')), type));
+
+                    }
+                    else {
+                        params.push(ListParser.parse(parser, eval(body.join('')), type));
+                    }
+
                 }
                 else {
-                    console.log(eval(body.join('')));
-                    params.push(eval(body.join('')).toString());
+                    params.push(eval(body.join('')));
                 }
 
             }
