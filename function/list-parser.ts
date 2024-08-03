@@ -1,12 +1,11 @@
 import { Program } from "../ast/ast.ts";
 import { HTL_LIST } from "../class/list.ts";
 import { Token, TokenType, tokenize } from "../lexer/lexer.ts";
-import { ListType } from "../memory/memory-list.ts";
 import Parser from "../parser.ts";
 
 export class ListParser {
 
-    static parse(parser: Parser, array: Array<any>) {
+    static parse(parser: Parser, array: Array<any>,arrayType:string) {
 
         const htlList = new HTL_LIST(array);
 
@@ -42,11 +41,10 @@ export class ListParser {
 
             // remove closeParen
             parser.eat();
-
-            return htlList.getIndex(content);
+            
+            return htlList.getIndex(content,arrayType);
 
         }
-
 
         if (parser.at().value == 'for') {
 
@@ -75,11 +73,11 @@ export class ListParser {
             parser.tokens.pop();
 
             let forEachBodies: Array<Array<Token>> = [];
-            
+
             array.forEach((item) => {
 
                 forEachBodies.push(parser.tokens.map((token) => {
-                    const newToken={value:token.value.replace('element', item),type:token.type} as Token;
+                    const newToken = { value: token.value.replace(itemName, item), type: token.type } as Token;
                     return newToken;
                 }));
 
@@ -92,6 +90,11 @@ export class ListParser {
             // console.log(parser.tokens);
 
         }
+  
+        if(parser.at().value==''){
+
+        }
+        
 
     }
 
