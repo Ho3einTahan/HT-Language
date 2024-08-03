@@ -22,7 +22,9 @@ export class HTL_LIST {
      * @param index
      */
     at(array: Array<any>, index: number): any {
-        return array.at(index);
+        const item = array.at(index);
+        // used to support string and other type
+        return JSON.stringify(item);
     }
 
     /**
@@ -76,10 +78,21 @@ export class HTL_LIST {
 
     /**
      * add new Item to List
-     * @param item
+     * @param param
      */
-    add(item: any): Array<any> {
-        this.array.push(item)
+    add(param: Array<any>): Array<any> {
+        if (param.length == 1) {
+            // extract item in List
+            this.array.push(param[0]);
+        }
+        else if (param.length > 1) {
+            this.array = param;
+        }
+        else {
+            throw Error('pleas set item for add or replce with List value');
+        }
+        console.log('hasanc');
+        console.log(this.array);
         return this.array;
     }
 
