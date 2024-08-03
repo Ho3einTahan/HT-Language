@@ -124,12 +124,34 @@ export class ListParser {
             // remove openParen
             parser.eat();
 
-            const index=parser.eat().value;
+            const index = parser.eat().value;
 
             // remove closeParen
             parser.eat();
 
             return htlList.removeAt(parseInt(index));
+
+        }
+
+        if (parser.at().value == 'add') {
+
+            let params: Array<any> = [];
+
+            // remove list's methode
+            parser.eat();
+
+            // remove openParen
+            parser.eat();
+
+            while (parser.at().type != TokenType.CloseParen) {
+                if (parser.at().value == ',') parser.eat();
+                params.push(parser.eat().value);
+            }
+
+            // remove closeParen
+            parser.eat();
+
+            return htlList.add(params);
 
         }
 
