@@ -1,5 +1,5 @@
 export type ListType = {
-    type: String,
+    type: string,
     body: Array<any>,
 };
 
@@ -20,7 +20,7 @@ export class MemoryList {
 
     private memory: Record<string, ListType> = {};
 
-    public get_BODY_OF_LIST(key: string) {
+    public get_BODY_OF_LIST(key: string):ListType{
         return this.memory[key];
     }
 
@@ -31,10 +31,6 @@ export class MemoryList {
     public define_LIST(key: string, value: ListType): void {
         // this.MemoryList['vLIST'] = value;
         this.memory[key] = value;
-    }
-
-    public get_ELEMENT_OF_LIST(key: string):ListType{ 
-        return this.memory[key];
     }
 
 }
