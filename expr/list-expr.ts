@@ -3,11 +3,13 @@ import { TokenType } from "../lexer/lexer.ts";
 import Parser from "../parser.ts";
 import { ListType } from "../memory/memory-list.ts";
 import { ListParser } from "../function/list-parser.ts";
+import { stringToBool } from "../function/string-to-bool.ts";
 
 
 export function parse_list_expr(parser: Parser): Expr {
 
-    let name, type: String = '';
+    let type: string = '';
+    let name: string = '';
 
     let bodyList: Array<any> = [];
 
@@ -20,7 +22,6 @@ export function parse_list_expr(parser: Parser): Expr {
         type += parser.eat().value;
 
     }
-
 
     // get name of List
     name = parser.eat().value;
@@ -218,26 +219,20 @@ export function parse_list_expr(parser: Parser): Expr {
 
 
     if (bodyList.length > 0) {
-
         // add closeBrack to List
         if (parser.at().type == TokenType.closeBrack) bodyList.push(parser.eat().value)
-
-        parser.memoryLIST.define_LIST(name, { type, body: bodyList } as ListType);
-
+        parser.memoryLIST.define_LIST(name, { type: type, body: bodyList } as ListType);
     }
     else {
-
         const body = parser.memoryLIST.get_BODY_OF_LIST(name).body;
 
+        const type = parser.memoryLIST.get_BODY_OF_LIST(name).type;
+
         // use eval to remove openBrack AND closeBrack
-        const response = ListParser.parse(parser, eval(body.join('')));
+        const response = ListParser.parse(parser, eval(body.join('')), type);
+
     }
 
     return {} as Expr;
 
-}
-
-
-function stringToBool(str: string): boolean {
-    return str.toLowerCase() == "true";
 }
