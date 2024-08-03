@@ -1,11 +1,11 @@
 import { Program } from "../ast/ast.ts";
-import { HTL_LIST } from "../class/list.ts";
+import { HTL_LIST } from "../HTL/htl-list.ts";
 import { Token, TokenType, tokenize } from "../lexer/lexer.ts";
 import Parser from "../parser.ts";
 
 export class ListParser {
 
-    static parse(parser: Parser, array: Array<any>,arrayType:string) {
+    static parse(parser: Parser, array: Array<any>, arrayType: string) {
 
         const htlList = new HTL_LIST(array);
 
@@ -41,8 +41,8 @@ export class ListParser {
 
             // remove closeParen
             parser.eat();
-            
-            return htlList.getIndex(content,arrayType);
+
+            return htlList.getIndex(content, arrayType);
 
         }
 
@@ -90,11 +90,48 @@ export class ListParser {
             // console.log(parser.tokens);
 
         }
-  
-        if(parser.at().value==''){
+
+        if (parser.at().value == 'lstItem') {
+
+            // remove list's methode
+            parser.eat();
+            // remove openParen
+            parser.eat();
+            // remove closeParen
+            parser.eat();
+
+            return htlList.lstItem();
 
         }
-        
+
+        if (parser.at().value == 'fstItem') {
+
+            // remove list's methode
+            parser.eat();
+            // remove openParen
+            parser.eat();
+            // remove closeParen
+            parser.eat();
+
+            return htlList.fstItem();
+
+        }
+
+        if (parser.at().value == 'removeAt') {
+
+            // remove list's methode
+            parser.eat();
+            // remove openParen
+            parser.eat();
+
+            const index=parser.eat().value;
+
+            // remove closeParen
+            parser.eat();
+
+            return htlList.removeAt(parseInt(index));
+
+        }
 
     }
 
