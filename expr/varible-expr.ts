@@ -1,5 +1,5 @@
 
-import Parser from "../parser.ts";
+import Parser from "../parser/Parser.ts";
 import { TokenType } from "../lexer/lexer.ts";
 import { Stmt } from "../ast/ast.ts";
 import { parse_additive_expr } from "./additive-expr.ts";
