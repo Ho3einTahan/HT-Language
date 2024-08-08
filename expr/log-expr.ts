@@ -1,4 +1,4 @@
-import Parser from "../parser.ts";
+import Parser from "../parser/Parser.ts";
 import { TokenType } from "../lexer/lexer.ts";
 import { LogExpr } from "../ast/ast.ts";
 import { ListParser } from "../function/list-parser.ts";
@@ -41,45 +41,67 @@ export function parse_log_expr(parser: Parser) {
 
                 // get body of list
                 const body = parser.memoryLIST.get_BODY_OF_LIST(listName).body;
-                const type = parser.memoryLIST.get_BODY_OF_LIST(listName).type;
+                const listType = parser.memoryLIST.get_BODY_OF_LIST(listName).type;
+
                 // if it was a methode .  it will have a '.' character
                 if (parser.at().value == '.') {
 
-                    parser.eat();
+                    // removed . character
+                    parser.eat();/* 
 
-                    if (type == 'liststring') {
-
-                        const listAsString = body.map(token => {
-                            // Add quotes to non-symbol tokens
-                            if (token !== "[" && token !== "]" && token !== ",") {
-                                return `'${token}'`;
-                            }
-                            return token;
-                        });
-
-                        params.push(ListParser.parse(parser, eval(listAsString.join('')), type));
-
-                    }
-                    else {
-                        params.push(ListParser.parse(parser, eval(body.join('')), type));
-                    }
+                    const listAsString = listType == 'liststring' ? body.map(token => {
+                        // Add quotes to non-symbol tokens
+                        if (token !== "[" && token !== "]" && token !== ",") {
+                            return `'${token}'`;
+                        }
+                        return token;
+                    }) : body;
+                    console.log(listAsString);
+                    console.log(body); */
+                    console.log(body);
+                    console.log(body.join(''));
+                    params.push(ListParser.parse(parser, listName, eval(body.join(',')), listType));
 
                 }
                 else {
-                    params.push(eval(body.join('')));
+
+                    const list = body.map(token => {
+                        if (listType == 'liststring') return `"${token}"`;
+                        else return token;
+                    });
+
+                    // remove openParen 
+                    params.shift();
+
+                    params.push('[');
+
+                    list.forEach((item) => {
+                        params.push(item);
+                        params.push(',');
+                    });
+
+                    params.pop();
+                    params.push(']');
                 }
+
 
             }
             else {
+                // cant applide any operator to List Types
+                // []+12 => Error
+                // [] => correct
+                if (params[params.length - 1] == ']' && parser.at().value == '+' || parser.at().value == '-' || parser.at().value == '*' || parser.at().value == '/' || parser.at().value == '%') {
+                    const operator = parser.at().value;
+                    const MSG = `${operator} cant be applied to types List `;
+                    throw Error(MSG);
+                }
+
                 params.push(parser.eat().value);
             }
 
         }
 
     }
-
-    // remove openParen   (
-    params.shift();
 
     // remove closeParen  )
     parser.eat();
@@ -91,4 +113,11 @@ export function parse_log_expr(parser: Parser) {
 
 function parseVaribleExpression(parser: Parser): any {
     return parser.memoryVAR.get_VALUE_OF_VARIABLE(parser.eat().value);
+}
+
+function parseListExpression(parser: Parser, listName: string) {
+
+    let params: Array<any> = [];
+
+
 }
