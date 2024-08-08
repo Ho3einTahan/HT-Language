@@ -1,11 +1,12 @@
 import { Program } from "../ast/ast.ts";
 import { HTL_LIST } from "../HTL/htl-list.ts";
 import { Token, TokenType, tokenize } from "../lexer/lexer.ts";
-import Parser from "../parser.ts";
+import { ListType } from "../memory/memory-list.ts";
+import Parser from "../parser/Parser.ts";
 
 export class ListParser {
 
-    static parse(parser: Parser, array: Array<any>, arrayType: string) {
+    static parse(parser: Parser, listName: string, array: Array<any>, listType: string) {
 
         const htlList = new HTL_LIST(array);
 
@@ -42,7 +43,7 @@ export class ListParser {
             // remove closeParen
             parser.eat();
 
-            return htlList.getIndex(content, arrayType);
+            return htlList.getIndex(content, listType);
 
         }
 
@@ -84,10 +85,9 @@ export class ListParser {
             });
 
             parser.tokens = forEachBodies.flat();
+            
             // add EndOfFile token
             parser.tokens.push({ value: 'EndOfFile', type: TokenType.EOF });
-
-            // console.log(parser.tokens);
 
         }
 
@@ -135,23 +135,25 @@ export class ListParser {
 
         if (parser.at().value == 'add') {
 
-            let params: Array<any> = [];
-
             // remove list's methode
             parser.eat();
 
             // remove openParen
             parser.eat();
 
-            while (parser.at().type != TokenType.CloseParen) {
-                if (parser.at().value == ',') parser.eat();
-                params.push(parser.eat().value);
-            }
+            /*   while (parser.at().type != TokenType.CloseParen) {
+                  if (parser.at().value == ',') parser.eat();
+                  params.push(parser.eat().value);
+              } */
+
+            let param = parser.eat().value;
 
             // remove closeParen
             parser.eat();
 
-            return htlList.add(params);
+            const list = htlList.add(param, listType); 
+    
+            parser.memoryLIST.define_LIST(listName, { body: list, type: listType } as ListType);
 
         }
 
