@@ -79,20 +79,24 @@ export class HTL_LIST {
     /**
      * add new Item to List
      * @param param
+     * @param listType
      */
-    add(param: Array<any>): Array<any> {
-        if (param.length == 1) {
-            // extract item in List
-            this.array.push(param[0]);
+    add(param: any, listType: string): Array<any> {
+
+        if (listType == 'liststring' && typeof param != 'string' || listType == 'listint' && !parseInt(param) || listType == 'listbool' && stringToBool(param) == null) {
+            throw Error('Pleas Add correct Type OF Your List .');
         }
-        else if (param.length > 1) {
-            this.array = param;
+
+
+        if (param) {
+            if (listType == 'liststring') this.array.push(param);
+            if (listType == 'listint') this.array.push(parseInt(param));
+            if (listType == 'listbool') this.array.push(stringToBool(param));
         }
         else {
-            throw Error('pleas set item for add or replce with List value');
+            throw Error('Pleas Enter Item To Add List');
         }
-        console.log('hasanc');
-        console.log(this.array);
+
         return this.array;
     }
 
