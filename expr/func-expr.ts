@@ -1,4 +1,4 @@
-import Parser from "../parser/parser.ts";
+import Parser from "../parser/Parser.ts";
 import { Expr, Stmt } from "../ast/ast.ts";
 import { TokenType } from "../lexer/lexer.ts";
 import { valueComputing } from "../function/value-computing.ts";
