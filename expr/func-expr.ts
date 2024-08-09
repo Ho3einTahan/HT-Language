@@ -1,5 +1,4 @@
-
-import Parser from "../parser.ts";
+import Parser from "../parser/parser.ts";
 import { Expr, Stmt } from "../ast/ast.ts";
 import { TokenType } from "../lexer/lexer.ts";
 import { valueComputing } from "../function/value-computing.ts";
@@ -69,21 +68,21 @@ export function parse_function_expr(parser: Parser) {
         }
 
     }
-    else if (parser.memoryFUNC.isExist(parser.at().value)) {
+    else if (parser.memoryFUNC.hasFunction(parser.at().value)) {
 
         name = parser.eat().value;
 
-        const func = parser.memoryFUNC.get_FUNCTION_VALUE(name);
+        const func = parser.memoryFUNC.get_VALUE_OF_FUNCTION_(name);
 
         // remove openParen 
         parser.eat();
 
         if (func.params.length > 0) {
 
-            if (parser.memoryVAR.isExist(parser.at().value)) {
+            if (parser.memoryVAR.hasVariable(parser.at().value)) {
 
                 // get  params
-                while (parser.memoryVAR.isExist(parser.at().value) || parser.at().value == ',') {
+                while (parser.memoryVAR.hasVariable(parser.at().value) || parser.at().value == ',') {
 
                     if (parser.at().value == ',') {
                         // remove ',' character
@@ -118,7 +117,7 @@ export function parse_function_expr(parser: Parser) {
     else {
 
         // get FUNCVALUE By name
-        const func = parser.memoryFUNC.get_FUNCTION_VALUE(name);
+        const func = parser.memoryFUNC.hasFunction(name);
 
         // update params value
         parser.memoryFUNC.define_FUNCTION(name, { type: func.type, body: func.body, params } as FuncType);
