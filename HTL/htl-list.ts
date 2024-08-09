@@ -38,17 +38,12 @@ export class HTL_LIST {
      * @param type
      */
     getIndex(content: string, type: string): number {
-        if (type == 'listbool') {
-            return this.array.indexOf(stringToBool(content));
-        }
-        else if (type == 'listint') {
-            return this.array.indexOf(parseInt(content));
-        }
-        else if (type == 'liststring') {
-            return this.array.indexOf(content.slice(1, -1));
-        }
+
+        if (type == 'liststring') return this.array.indexOf(content.slice(1, -1));
+        if (type == 'listint') return this.array.indexOf(parseInt(content));
+        if (type == 'listbool') return this.array.indexOf(stringToBool(content));
         else {
-            return this.array.indexOf(content);
+            throw Error('Pleas Add correct Type OF Your List .');
         }
 
     }
@@ -77,8 +72,9 @@ export class HTL_LIST {
      */
     removeAt(index: number): Array<any> {
         // filter by index 
-        const outArray = this.array.map((item, i) => i != index);
-        return outArray;
+        /* const outArray = this.array.map((item, i) => i != index); */
+        delete this.array[index];
+        return this.array;
     }
 
     /**
@@ -87,11 +83,11 @@ export class HTL_LIST {
      * @param listType
      */
     add(param: any, listType: string): Array<any> {
-
+        
+        // check listType
         if (listType == 'liststring' && typeof param != 'string' || listType == 'listint' && !parseInt(param) || listType == 'listbool' && stringToBool(param) == null) {
             throw Error('Pleas Add correct Type OF Your List .');
         }
-
 
         if (param) {
             if (listType == 'liststring') this.array.push(param);
@@ -110,8 +106,17 @@ export class HTL_LIST {
      * or reblace with previews items
      * @param items
      */
-    addAll(items: Array<any>): Array<any> {
-        this.array.push(items);
+    addAll(items: Array<any>,listType:string): Array<any> {
+
+        items.map((item)=>{            
+        // check listType
+        if (listType == 'liststring' && typeof item != 'string' || listType == 'listint' && !parseInt(item) || listType == 'listbool' && stringToBool(item) == null) {
+            throw Error('Pleas Add correct Type OF Your List .');
+        }
+        });
+
+
+        this.array=items;
         return this.array;
     }
 
