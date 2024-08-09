@@ -40,42 +40,31 @@ export function parse_log_expr(parser: Parser) {
                 const listName = parser.eat().value;
 
                 // get body of list
-                const body = parser.memoryLIST.get_BODY_OF_LIST(listName).body;
+                const list = parser.memoryLIST.get_BODY_OF_LIST(listName).body;
                 const listType = parser.memoryLIST.get_BODY_OF_LIST(listName).type;
 
-                // if it was a methode .  it will have a '.' character
+                // if it was a methode .
                 if (parser.at().value == '.') {
 
                     // removed . character
-                    parser.eat();/* 
+                    parser.eat();
 
-                    const listAsString = listType == 'liststring' ? body.map(token => {
-                        // Add quotes to non-symbol tokens
-                        if (token !== "[" && token !== "]" && token !== ",") {
-                            return `'${token}'`;
-                        }
-                        return token;
-                    }) : body;
-                    console.log(listAsString);
-                    console.log(body); */
-                    console.log(body);
-                    console.log(body.join(''));
-                    params.push(ListParser.parse(parser, listName, eval(body.join(',')), listType));
+                    params.push(ListParser.parse(parser, listName, list, listType));
 
                 }
                 else {
 
-                    const list = body.map(token => {
+                    const emptyList = list.map(token => {
                         if (listType == 'liststring') return `"${token}"`;
                         else return token;
                     });
 
-                    // remove openParen 
+                    // remove openParen OF Log  ==> log()
                     params.shift();
 
-                    params.push('[');
+                    params.unshift('[');
 
-                    list.forEach((item) => {
+                    emptyList.forEach((item) => {
                         params.push(item);
                         params.push(',');
                     });
@@ -87,12 +76,14 @@ export function parse_log_expr(parser: Parser) {
 
             }
             else {
-                // cant applide any operator to List Types
+
+                const unValidOperators = ['+', '-', '*', '/', '%'];
+
                 // []+12 => Error
                 // [] => correct
-                if (params[params.length - 1] == ']' && parser.at().value == '+' || parser.at().value == '-' || parser.at().value == '*' || parser.at().value == '/' || parser.at().value == '%') {
+                if (params.indexOf(']') != -1 && unValidOperators.includes(parser.at().value)) {
                     const operator = parser.at().value;
-                    const MSG = `${operator} cant be applied to types List `;
+                    const MSG = ` '${operator}' cant be applied to types List `;
                     throw Error(MSG);
                 }
 
@@ -103,7 +94,10 @@ export function parse_log_expr(parser: Parser) {
 
     }
 
-    // remove closeParen  )
+    // remove openParen OF Log  ==> log()
+    if (params[0] == '(') params.shift();
+
+    // remove closeParen OF Log  ==> log()
     parser.eat();
 
     //  func asd(a,b){ let a=12+11 12+13 log((12+12)*2+5+(3+5)) log(10+15) log(2*2*(5+4)) }
