@@ -122,7 +122,7 @@ export function parse_list_expr(parser: Parser): Expr {
 
         let body = parser.memoryLIST.get_BODY_OF_LIST(listName).body;
         const type = parser.memoryLIST.get_BODY_OF_LIST(listName).type;
-        console.log('2222222');
+
         const response = ListParser.parse(parser, listName, body, type);
 
     }
