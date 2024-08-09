@@ -21,10 +21,15 @@ export class HTL_LIST {
      * @param array
      * @param index
      */
-    at(array: Array<any>, index: number): any {
-        const item = array.at(index);
+    at(list: Array<any>, listType: string, index: number): any {
+        const item = list.at(index);
         // used to support string and other type
-        return JSON.stringify(item);
+        if (listType == 'liststring') return JSON.stringify(item);
+        if (listType == 'listint') return parseInt(item);
+        if (listType == 'listbool') return stringToBool(item.toString());
+        else {
+            throw Error('Pleas Enter Valid Value With Correct Type');
+        }
     }
 
     /**
