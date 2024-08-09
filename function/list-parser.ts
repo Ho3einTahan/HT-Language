@@ -178,6 +178,31 @@ export class ListParser {
             parser.memoryLIST.define_LIST(listName, { body: newList, type: listType } as ListType);
 
         }
+        
+        // replace by index
+        if(parser.at().value=='replIndex'){
+
+              // remove list's methode
+              parser.eat();
+
+              // remove openParen
+              parser.eat();
+
+            let index=parser.eat().value;
+
+            // remove , character
+            parser.eat();
+
+            let replaceContent=parser.eat().value;
+            
+            // remove closeParen
+            parser.eat();
+
+           const newList= htlList.replIndex(parseInt(index),replaceContent,listType);
+           
+           parser.memoryLIST.define_LIST(listName, { body: newList, type: listType } as ListType);
+
+        }
 
     }
 
