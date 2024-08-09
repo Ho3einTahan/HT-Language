@@ -6,9 +6,9 @@ import Parser from "../parser/Parser.ts";
 
 export class ListParser {
 
-    static parse(parser: Parser, listName: string, array: Array<any>, listType: string) {
+    static parse(parser: Parser, listName: string, list: Array<any>, listType: string) {
 
-        const htlList = new HTL_LIST(array);
+        const htlList = new HTL_LIST(list);
 
         if (parser.at().value == 'at') {
 
@@ -24,7 +24,7 @@ export class ListParser {
             // remove closeParen
             parser.eat();
 
-            return htlList.at(array, index);
+            return htlList.at(list, listType, index);
 
         }
 
@@ -75,7 +75,7 @@ export class ListParser {
 
             let forEachBodies: Array<Array<Token>> = [];
 
-            array.forEach((item) => {
+            list.forEach((item) => {
 
                 forEachBodies.push(parser.tokens.map((token) => {
                     const newToken = { value: token.value.replace(itemName, item), type: token.type } as Token;
@@ -85,7 +85,7 @@ export class ListParser {
             });
 
             parser.tokens = forEachBodies.flat();
-            
+
             // add EndOfFile token
             parser.tokens.push({ value: 'EndOfFile', type: TokenType.EOF });
 
@@ -151,8 +151,8 @@ export class ListParser {
             // remove closeParen
             parser.eat();
 
-            const list = htlList.add(param, listType); 
-    
+            const list = htlList.add(param, listType);
+
             parser.memoryLIST.define_LIST(listName, { body: list, type: listType } as ListType);
 
         }
