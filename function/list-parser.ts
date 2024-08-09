@@ -129,7 +129,9 @@ export class ListParser {
             // remove closeParen
             parser.eat();
 
-            return htlList.removeAt(parseInt(index));
+            const newList = htlList.removeAt(parseInt(index));
+
+            parser.memoryLIST.define_LIST(listName, { body: newList, type: listType } as ListType);
 
         }
 
@@ -141,11 +143,6 @@ export class ListParser {
             // remove openParen
             parser.eat();
 
-            /*   while (parser.at().type != TokenType.CloseParen) {
-                  if (parser.at().value == ',') parser.eat();
-                  params.push(parser.eat().value);
-              } */
-
             let param = parser.eat().value;
 
             // remove closeParen
@@ -154,6 +151,31 @@ export class ListParser {
             const list = htlList.add(param, listType);
 
             parser.memoryLIST.define_LIST(listName, { body: list, type: listType } as ListType);
+
+        }
+
+        if (parser.at().value == 'addAll') {
+
+            let params: Array<any> = [];
+
+            // remove list's methode
+            parser.eat();
+
+            // remove openParen
+            parser.eat();
+
+            while (parser.at().type != TokenType.CloseParen) {
+                if (parser.at().value == ',') parser.eat();
+                params.push(parser.eat().value);
+            }
+
+            // remove closeParen
+            parser.eat();
+
+            // Replace All items OF List with New Items 
+            const newList = htlList.addAll(params, listType);
+
+            parser.memoryLIST.define_LIST(listName, { body: newList, type: listType } as ListType);
 
         }
 
