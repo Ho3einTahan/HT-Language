@@ -83,7 +83,7 @@ export class HTL_LIST {
      * @param listType
      */
     add(param: any, listType: string): Array<any> {
-        
+
         // check listType
         if (listType == 'liststring' && typeof param != 'string' || listType == 'listint' && !parseInt(param) || listType == 'listbool' && stringToBool(param) == null) {
             throw Error('Pleas Add correct Type OF Your List .');
@@ -106,17 +106,17 @@ export class HTL_LIST {
      * or reblace with previews items
      * @param items
      */
-    addAll(items: Array<any>,listType:string): Array<any> {
+    addAll(items: Array<any>, listType: string): Array<any> {
 
-        items.map((item)=>{            
-        // check listType
-        if (listType == 'liststring' && typeof item != 'string' || listType == 'listint' && !parseInt(item) || listType == 'listbool' && stringToBool(item) == null) {
-            throw Error('Pleas Add correct Type OF Your List .');
-        }
+        items.map((item) => {
+            // check listType
+            if (listType == 'liststring' && typeof item != 'string' || listType == 'listint' && !parseInt(item) || listType == 'listbool' && stringToBool(item) == null) {
+                throw Error('Pleas Add correct Type OF Your List .');
+            }
         });
 
 
-        this.array=items;
+        this.array = items;
         return this.array;
     }
 
@@ -124,12 +124,47 @@ export class HTL_LIST {
      *  replace item by index
      * @param index
      * @param content
+     * @param listType
      */
-    replce_Index(index: number, content: any) {
+    replIndex(index: number, content: any, listType: string) {
+
+        // check listType
+        if (listType == 'liststring' && typeof content != 'string' || listType == 'listint' && !parseInt(content) || listType == 'listbool' && stringToBool(content) == null) {
+            throw Error('Pleas Add correct Type OF Your List .');
+        }
+
         this.array[index] = content;
-
-        // fix it
-
+        return this.array;
     }
 
+
+    /**
+ *  replace item by index
+ * @param content
+ * @param replaceContent
+ * @param listType
+ */
+    replContent(content: any, replaceContent: any, listType: string) {
+
+        // check listType
+        if (listType == 'liststring' && typeof content != 'string' || listType == 'listint' && !parseInt(content) || listType == 'listbool' && stringToBool(content) == null) {
+            throw Error('Pleas Add correct Type OF Your List .');
+        }
+        
+        if (listType == 'liststring' && typeof replaceContent != 'string' || listType == 'listint' && !parseInt(replaceContent) || listType == 'listbool' && stringToBool(replaceContent) == null) {
+            throw Error('Pleas Add correct Type OF Your List .');
+        }
+
+        const list = this.array.map((item) => {
+            if (item == content) return replaceContent;
+           else 
+           return item;
+        });
+
+        return list;
+    }
+
+
+
 }
+
