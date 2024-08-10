@@ -203,6 +203,31 @@ export class ListParser {
            parser.memoryLIST.define_LIST(listName, { body: newList, type: listType } as ListType);
 
         }
+        
+        // replcae by content
+        if(parser.at().value=='replContent'){
+
+                          // remove list's methode
+                          parser.eat();
+
+                          // remove openParen
+                          parser.eat();
+            
+                        let content=parser.eat().value;
+            
+                        // remove , character
+                        parser.eat();
+            
+                        let replaceContent=parser.eat().value;
+                        
+                        // remove closeParen
+                        parser.eat();
+            
+                       const newList= htlList.replContent(content,replaceContent,listType);
+                       
+                       parser.memoryLIST.define_LIST(listName, { body: newList, type: listType } as ListType);            
+
+        }
 
     }
 
