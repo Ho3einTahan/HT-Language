@@ -42,7 +42,7 @@ export function valueComputing(ast: Expr, memoryVAR: MemoryVAR, memoryFUNC: Memo
 
         return {};
     }
-    else if (ast.kind == "ConditionalExpr") {
+    else if (ast.kind == "ConditionalExpr") {       
         const conditionalAst = ast as conditionalExpr;
 
         conditionalAst.body.forEach(conditionalExpr => {
