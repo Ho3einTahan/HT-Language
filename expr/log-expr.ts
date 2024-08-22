@@ -64,7 +64,7 @@ export function parse_log_expr(parser: Parser) {
 
                     params.unshift('[');
 
-                    emptyList.forEach((item) => {
+                    emptyList.map((item) => {
                         params.push(item);
                         params.push(',');
                     });
@@ -79,8 +79,8 @@ export function parse_log_expr(parser: Parser) {
 
                 const unValidOperators = ['+', '-', '*', '/', '%'];
 
-                // []+12 => Error
-                // [] => correct
+                // [a,b,c,d,e,f]+12 => Error
+                // [a,b,c,d,e,f] => correct
                 if (params.indexOf(']') != -1 && unValidOperators.includes(parser.at().value)) {
                     const operator = parser.at().value;
                     const MSG = ` '${operator}' cant be applied to types List `;
