@@ -1,4 +1,4 @@
-import { Stmt, Program, NumericLiteral, Expr, Identifire, VaribleLiteral, FunctionCaller, LogExpr, conditionalExpr } from "../ast/ast.ts";
+import { Stmt, Program, NumericLiteral, Expr, Identifire, VaribleLiteral } from "../ast/ast.ts";
 import { tokenize, Token, TokenType } from "../lexer/lexer.ts";
 import { MemoryFUNC } from "../memory/memory-func.ts";
 import { parse_additive_expr } from "../expr/additive-expr.ts";
@@ -10,8 +10,8 @@ import { MemoryVAR } from "../memory/memory-var.ts";
 import { parse_list_expr } from "../expr/list-expr.ts";
 import { MemoryList } from "../memory/memory-list.ts";
 
-export default class Parser {
 
+export default class Parser {
     public tokens: Token[] = [];
 
     public memoryVAR = MemoryVAR.getInstance();
@@ -67,9 +67,7 @@ export default class Parser {
 
     public parse_expr(): Expr {
 
-        if (!this.tokens.length) {
-            throw new Error('Unexpected end of input');
-        }
+        if (!this.tokens.length)  throw new Error('Unexpected end of input');
 
         if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memoryVAR.hasVariable(this.at().value)) {
             return parse_varible_expr(this);
@@ -116,6 +114,7 @@ export default class Parser {
 
 
                 case TokenType.OpenParen:
+
                     // remove openParen
                     this.eat();
 
