@@ -19,14 +19,30 @@ export function parse_varible_expr(parser: Parser) {
 
     name = parser.eat().value;
 
-    while (parser.at().value == '=') {
-        operator = parser.eat().value;
-        value = parse_additive_expr(parser);
-    }
-    
-    const varibleValue = valueComputing(value, parser.memoryVAR, parser.memoryFUNC, parser.memoryLIST);
+    operator = parser.eat().value;
 
-    parser.memoryVAR.define_VARIABLE(name, varibleValue, type);
+    if (parser.memoryVAR.hasVariable(parser.at().value)) {
+        value = parser.memoryVAR.get_VALUE_OF_VARIABLE(parser.eat().value);
+    }
+    else if (parser.memoryLIST.hasList(parser.at().value)) {
+
+        const unValidOperators = ['+', '-', '*', '/', '%'];
+        value = parser.memoryLIST.get_BODY_OF_LIST(parser.eat().value).body;
+        value = ['[', ...value.map((item, index) => index < value.length - 1 ? item + ',' : item), ']'].join('');
+
+        const operator = parser.at().value;
+        const MSG = ` '${operator}' cant be applied to types List `;
+        if (unValidOperators.includes(parser.at().value)) throw Error(MSG);
+
+    }
+    else {
+        value = parser.parse_expr();
+        const varibleValue = valueComputing(value, parser.memoryVAR, parser.memoryFUNC, parser.memoryLIST);
+        parser.memoryVAR.define_VARIABLE(name, varibleValue, type);
+        return {} as Stmt;
+    }
+
+    parser.memoryVAR.define_VARIABLE(name, value, type);
 
     return {} as Stmt;
 }
