@@ -106,26 +106,14 @@ export function parse_list_expr(parser: Parser): Expr {
         }
     }
 
-    if (listType) {
-
-        let body: Array<any> = [];
 
         if (parser.at().type == TokenType.closeBrack) bodyList.push(parser.eat().value);
 
         const jsonString = bodyList.join('');
 
-        body = eval(jsonString);
+        let body: Array<any>=eval(jsonString);
 
         parser.memoryLIST.define_LIST(listName, { type: listType, body } as ListType);
-
-    } else {
-
-        let body = parser.memoryLIST.get_BODY_OF_LIST(listName).body;
-        const type = parser.memoryLIST.get_BODY_OF_LIST(listName).type;
-
-        const response = ListParser.parse(parser, listName, body, type);
-
-    }
 
     return {} as Expr;
 }
