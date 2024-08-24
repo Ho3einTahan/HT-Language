@@ -1,5 +1,5 @@
 import { BinaryExpr, Expr } from "../ast/ast.ts";
-import Parser from "../parser.ts";
+import Parser from "../parser/Parser.ts";
 
 
 export function parse_additive_expr(parser: Parser): Expr {
@@ -16,6 +16,7 @@ export function parse_additive_expr(parser: Parser): Expr {
 
     }
 
+
     return left;
 }
 
@@ -23,14 +24,13 @@ export function parse_additive_expr(parser: Parser): Expr {
 
 function parse_multiplicative_expr(parser: Parser) {
 
-    let left = parser.parse_primary_expr(); // 2+5*(4)+5*(((2)))
+    let left = parser.parse_primary_expr(); // 3+4*(5)+6*(((7)))
 
     while (parser.not_eof() && (parser.at().value === '*' || parser.at().value === '/' || parser.at().value === '%' || parser.at().value === '^')) {
 
         const operator = parser.eat().value;
-
         const right = parser.parse_primary_expr();
-
+      
         left = { kind: "BinaryExpr", left, operator, right } as BinaryExpr;
 
     }
