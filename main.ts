@@ -1,4 +1,4 @@
-import Parser from "./parser.ts";
+import Parser from "./parser/Parser.ts";
 import { valueComputing } from "./function/value-computing.ts";
 
 async function repl() {
