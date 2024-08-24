@@ -9,6 +9,8 @@ import { parse_varible_expr } from "../expr/varible-expr.ts";
 import { MemoryVAR } from "../memory/memory-var.ts";
 import { parse_list_expr } from "../expr/list-expr.ts";
 import { MemoryList } from "../memory/memory-list.ts";
+import { parse_preIncrement_decrement_expr } from "../expr/pre-increment-decrement-expr.ts";
+import { parse_postIncrement_decrement_expr } from "../expr/post-increment-decrement-expr.ts";
 
 
 export default class Parser {
@@ -66,24 +68,38 @@ export default class Parser {
 
 
     public parse_expr(): Expr {
+        console.log(this.tokens);
+        if (!this.tokens.length) throw new Error('Unexpected end of input');
 
-        if (!this.tokens.length)  throw new Error('Unexpected end of input');
-
+        // variable
         if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memoryVAR.hasVariable(this.at().value)) {
             return parse_varible_expr(this);
         }
+        // list
         else if (this.at().type == TokenType.List || this.memoryLIST.hasList(this.at().value)) {
             return parse_list_expr(this);
         }
+        // numeric
         else if (this.at().type == TokenType.Number || this.at().value == '(') {
             return parse_additive_expr(this);
         }
+        // pre operator
+        else if (this.at().type == TokenType.PreIncrement || this.at().type == TokenType.PreDecrement || this.at().type == TokenType.Exponentiation) {
+            return parse_preIncrement_decrement_expr(this);
+        }
+        // post Operator
+        else if (this.tokens[1].type == TokenType.postIncrement || this.tokens[1].type == TokenType.postDecrement) {
+            return parse_postIncrement_decrement_expr(this);
+        }
+        // function
         else if (this.at().type == TokenType.Func || this.memoryFUNC.hasFunction(this.at().value)) {
             return parse_function_expr(this);
         }
+        // log
         else if (this.at().type == TokenType.Log) {
             return parse_log_expr(this);
         }
+        // if
         else if (this.at().type == TokenType.IF) {
             return parse_conditional_expr(this);
         }
@@ -101,7 +117,7 @@ export default class Parser {
         const tk = this.at().type;
 
         if (this.memoryVAR.hasVariable(this.at().value))
-            return { kind: "NumericLiteral", value: parseFloat(this.memoryVAR.get_VALUE_OF_VARIABLE(this.eat().value)) } as NumericLiteral;
+            return { kind: "NumericLiteral", value: parseFloat(this.memoryVAR.get_VALUE_OF_VARIABLE(this.eat().value).value) } as NumericLiteral;
 
         else {
 
