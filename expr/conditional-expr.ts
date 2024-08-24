@@ -1,4 +1,4 @@
-import Parser from "../parser.ts";
+import Parser from "../parser/Parser.ts";
 import { TokenType } from "../lexer/lexer.ts";
 import { Expr, conditionalExpr } from "../ast/ast.ts";
 import { parse_varible_expr } from "./varible-expr.ts";
@@ -15,8 +15,8 @@ export function parse_conditional_expr(parser: Parser) {
 
     while (parser.at().type != TokenType.CloseParen) {
 
-        if (parser.memoryVAR.get(parser.at().value))
-            params.push(parser.memoryVAR.get(parser.eat().value));
+        if (parser.memoryVAR.hasVariable(parser.at().value))
+            params.push(parser.memoryVAR.hasVariable(parser.eat().value));
         else
             params.push(parser.eat().value);
 
@@ -45,7 +45,7 @@ export function parse_conditional_expr(parser: Parser) {
         if (paramResult == false) parser.eat();
 
         // If this.at().value exists in the variable, the value of the variable is updated
-        else if (parser.at().type == TokenType.Let || parser.at().type == TokenType.Const || parser.memoryVAR.get(parser.at().value))
+        else if (parser.at().type == TokenType.Let || parser.at().type == TokenType.Const || parser.memoryVAR.hasVariable(parser.at().value))
             parse_varible_expr(parser);
         else
             body.push(parser.parse_expr());
@@ -81,7 +81,7 @@ export function parse_conditional_expr(parser: Parser) {
 
             if (paramResult == false) {
 
-                if (parser.at().type == TokenType.Let || parser.at().type == TokenType.Const || parser.memoryVAR.get(parser.at().value))
+                if (parser.at().type == TokenType.Let || parser.at().type == TokenType.Const || parser.memoryVAR.hasVariable(parser.at().value))
                     parse_varible_expr(parser);
 
                 else
