@@ -43,6 +43,13 @@ export enum TokenType {
     //
     Symbol,
     //
+    PreDecrement,   // --a
+    PreIncrement,   // ++a
+    Exponentiation, // **a
+    //
+    postDecrement,   // --a
+    postIncrement,   // ++a
+    //
     EOF, // END OF FILE
 }
 
@@ -135,6 +142,32 @@ export function tokenize(sourceCode: string): Token[] {
         else if (src[0] == '}') {
             tokens.push(token(src.shift(), TokenType.CloseBracket));
         }
+        // HANDLE PRE INCREMENT AND DECREMENT AND Exponentiation
+        else if (src[0] == '+' && src[1] == '+') {
+            src.shift();
+            src.shift();
+            tokens.push(token('++', TokenType.PreIncrement));
+        }
+        else if (src[0] == '-' && src[1] == '-') {
+            src.shift();
+            src.shift();
+            tokens.push(token('--', TokenType.PreDecrement));
+        }
+        else if (src[0] == '*' && src[1] == '*') {
+            src.shift();
+            src.shift();
+            tokens.push(token('**', TokenType.Exponentiation));
+        }
+        else if (src[1] == '+' && src[2] == '+') {
+            src.shift();
+            src.shift();
+            tokens.push(token('++', TokenType.postIncrement));
+        }
+        else if (src[1] == '-' && src[2] == '-') {
+            src.shift();
+            src.shift();
+            tokens.push(token('--', TokenType.postDecrement));
+        }
         // HANDLE BINARY OPERATORS
         else if (src[0] == "+" || src[0] == "-" || src[0] == "*" || src[0] == "/" || src[0] == "%" || src[0] == "^") {
             tokens.push(token(src.shift(), TokenType.BinaryOperator));
@@ -171,7 +204,7 @@ export function tokenize(sourceCode: string): Token[] {
                     tokens.push(token(ident, TokenType.Identifier));
                 }
             }
-            else if (src[0] == ',' || src[0] == ':' || src[0]=='.') {
+            else if (src[0] == ',' || src[0] == ':' || src[0] == '.') {
                 tokens.push(token(src.shift(), TokenType.Symbol));
             }
             else if (isskippable(src[0])) {
