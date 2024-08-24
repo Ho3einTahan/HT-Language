@@ -1,3 +1,4 @@
+import { typeValidator } from "../function/type-validation.ts";
 import { stringToBool } from "../function/string-to-bool.ts";
 
 /// HoseinTahan Language List
@@ -84,10 +85,8 @@ export class HTL_LIST {
      */
     add(param: any, listType: string): Array<any> {
 
-        // check listType
-        if (listType == 'liststring' && typeof param != 'string' || listType == 'listint' && !parseInt(param) || listType == 'listbool' && stringToBool(param) == null) {
-            throw Error('Pleas Add correct Type OF Your List .');
-        }
+        // validate param listType
+        typeValidator(param, listType);
 
         if (param) {
             if (listType == 'liststring') this.array.push(param);
@@ -109,10 +108,8 @@ export class HTL_LIST {
     addAll(items: Array<any>, listType: string): Array<any> {
 
         items.map((item) => {
-            // check listType
-            if (listType == 'liststring' && typeof item != 'string' || listType == 'listint' && !parseInt(item) || listType == 'listbool' && stringToBool(item) == null) {
-                throw Error('Pleas Add correct Type OF Your List .');
-            }
+            // validate item listType
+            typeValidator(item, listType);
         });
 
 
@@ -128,10 +125,8 @@ export class HTL_LIST {
      */
     replIndex(index: number, content: any, listType: string) {
 
-        // check listType
-        if (listType == 'liststring' && typeof content != 'string' || listType == 'listint' && !parseInt(content) || listType == 'listbool' && stringToBool(content) == null) {
-            throw Error('Pleas Add correct Type OF Your List .');
-        }
+        // validate content listType
+        typeValidator(content, listType);
 
         this.array[index] = content;
         return this.array;
@@ -146,24 +141,23 @@ export class HTL_LIST {
  */
     replContent(content: any, replaceContent: any, listType: string) {
 
-        // check listType
-        if (listType == 'liststring' && typeof content != 'string' || listType == 'listint' && !parseInt(content) || listType == 'listbool' && stringToBool(content) == null) {
-            throw Error('Pleas Add correct Type OF Your List .');
-        }
-        
-        if (listType == 'liststring' && typeof replaceContent != 'string' || listType == 'listint' && !parseInt(replaceContent) || listType == 'listbool' && stringToBool(replaceContent) == null) {
-            throw Error('Pleas Add correct Type OF Your List .');
-        }
+        // validate content listType
+        typeValidator(content, listType);
+
+        // validate replaceContent listType
+        typeValidator(replaceContent, listType);
 
         const list = this.array.map((item) => {
             if (item == content) return replaceContent;
-           else 
-           return item;
+            else
+                return item;
         });
 
         return list;
     }
 
+    
+    
 
 
 }
