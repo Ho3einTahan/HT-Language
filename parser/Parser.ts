@@ -68,12 +68,19 @@ export default class Parser {
 
 
     public parse_expr(): Expr {
-        console.log(this.tokens);
+
         if (!this.tokens.length) throw new Error('Unexpected end of input');
 
         // variable
         if (this.at().type == TokenType.Let || this.at().type == TokenType.Const || this.memoryVAR.hasVariable(this.at().value)) {
-            return parse_varible_expr(this);
+            // post Operator
+            if (this.tokens[1].type == TokenType.Increment || this.tokens[1].type == TokenType.Decrement) {
+                const Varname=this.eat().value;
+                return parse_postIncrement_decrement_expr(this,Varname);
+            }
+            else {
+                return parse_varible_expr(this);
+            }
         }
         // list
         else if (this.at().type == TokenType.List || this.memoryLIST.hasList(this.at().value)) {
@@ -84,12 +91,12 @@ export default class Parser {
             return parse_additive_expr(this);
         }
         // pre operator
-        else if (this.at().type == TokenType.PreIncrement || this.at().type == TokenType.PreDecrement || this.at().type == TokenType.Exponentiation) {
-            return parse_preIncrement_decrement_expr(this);
-        }
-        // post Operator
-        else if (this.tokens[1].type == TokenType.postIncrement || this.tokens[1].type == TokenType.postDecrement) {
-            return parse_postIncrement_decrement_expr(this);
+        else if (this.at().type == TokenType.Increment || this.at().type == TokenType.Decrement || this.at().type == TokenType.Exponentiation) {
+            const Varname=this.tokens[1].value;
+            this.tokens.splice(1,1);
+            console.log(this.tokens);
+            console.log('aallasg');
+            return parse_preIncrement_decrement_expr(this,Varname);
         }
         // function
         else if (this.at().type == TokenType.Func || this.memoryFUNC.hasFunction(this.at().value)) {
