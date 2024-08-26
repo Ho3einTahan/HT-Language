@@ -1,21 +1,17 @@
 import { Expr, NumericLiteral } from "../ast/ast.ts";
 import Parser from "../parser/Parser.ts";
 
-export function parse_preIncrement_decrement_expr(parser: Parser): Expr {
+export function parse_preIncrement_decrement_expr(parser: Parser, Varname: string): Expr {
 
     // Variable Value
     let Varvalue;
-    // Variable Name
-    let Varname;
     // Variable Type
     let Vartype;
 
     // remove ++ OR -- OR ** character
     const operator = parser.eat().value;
 
-    if (parser.memoryVAR.hasVariable(parser.at().value)) {
-
-        Varname = parser.eat().value;
+    if (parser.memoryVAR.hasVariable(Varname)) {
 
         Varvalue = parser.memoryVAR.get_VALUE_OF_VARIABLE(Varname).value;
         Vartype = parser.memoryVAR.get_VALUE_OF_VARIABLE(Varname).type;
