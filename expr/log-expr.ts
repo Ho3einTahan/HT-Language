@@ -28,17 +28,15 @@ export function parse_log_expr(parser: Parser) {
         if (OPEN_CLOSE_Paren.length == 0) break;
 
         if (parser.memoryVAR.hasVariable(parser.at().value)) {
-            console.log(parser.tokens);
             // example a++
-            if (parser.tokens[1].type == TokenType.postIncrement || parser.tokens[1].type == TokenType.postDecrement) {
-                console.log('11111111111111111111111');
+            if (parser.tokens[1].type == TokenType.Increment || parser.tokens[1].type == TokenType.Decrement) {
                 params.push(parsePostIncrement_Decrement_Expression(parser));
             }
             else {
                 params.push(parseVaribleExpression(parser));
             }
         }
-        else if (parser.at().type == TokenType.PreIncrement || parser.at().type == TokenType.PreDecrement || parser.at().type == TokenType.Exponentiation) {
+        else if (parser.at().type == TokenType.Increment || parser.at().type == TokenType.Decrement || parser.at().type == TokenType.Exponentiation) {
             params.push(parsePreIncrement_Decrement_Expression(parser));
         }
         else if (parser.memoryLIST.hasList(parser.at().value)) {
@@ -107,21 +105,29 @@ function parsePreIncrement_Decrement_Expression(parser: Parser) {
 
     // tokens[0] => ++ -- **   tokens[1] => VarName
     const Varname = parser.tokens[1].value;
+    
+    // Remove Value OF Index 1 IN Array
+    parser.tokens.splice(1, 1);
 
-    parse_preIncrement_decrement_expr(parser);
+    parse_preIncrement_decrement_expr(parser, Varname);
 
     return parser.memoryVAR.get_VALUE_OF_VARIABLE(Varname).value;
 }
 
 
 function parsePostIncrement_Decrement_Expression(parser: Parser) {
-    console.log(parser.tokens);
+
     //   tokens[0] => VarName tokens[1] => ++ -- **
-    const Varname = parser.tokens[0].value;
+    const Varname = parser.eat().value;
 
-    parse_postIncrement_decrement_expr(parser);
+    // get current value of variable
+    const VarValue = parser.memoryVAR.get_VALUE_OF_VARIABLE(Varname).value;
 
-    return parser.memoryVAR.get_VALUE_OF_VARIABLE(Varname).value;
+    // HANDLE Increment AND Decrement => ++ --
+    parse_postIncrement_decrement_expr(parser, Varname);
+
+    // return previous value of variable
+    return VarValue;
 }
 
 function parseListMethodeExpression(parser: Parser, listName: string, list: Array<any>, listType: string) {
