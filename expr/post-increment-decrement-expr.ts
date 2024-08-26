@@ -1,19 +1,15 @@
 import { Expr, NumericLiteral } from "../ast/ast.ts";
 import Parser from "../parser/Parser.ts";
 
-export function parse_postIncrement_decrement_expr(parser: Parser): Expr {
+export function parse_postIncrement_decrement_expr(parser: Parser, Varname: string): Expr {
 
     // Variable Value
     let Varvalue;
-    // Variable Name
-    let Varname;
     // Variable Type
     let Vartype;
 
 
-    if (parser.memoryVAR.hasVariable(parser.at().value)) {
-
-        Varname = parser.eat().value;
+    if (parser.memoryVAR.hasVariable(Varname)) {
 
         Varvalue = parser.memoryVAR.get_VALUE_OF_VARIABLE(Varname).value;
         Vartype = parser.memoryVAR.get_VALUE_OF_VARIABLE(Varname).type;
@@ -24,7 +20,7 @@ export function parse_postIncrement_decrement_expr(parser: Parser): Expr {
         switch (operator) {
 
             case '++':
-               ++ Varvalue;
+                Varvalue++;
                 break;
             case '--':
                 Varvalue--;
@@ -36,8 +32,7 @@ export function parse_postIncrement_decrement_expr(parser: Parser): Expr {
 
 
     }
-    console.log('aaa');
-    console.log(Varvalue);
+
     // Update Value OF Variable
     parser.memoryVAR.define_VARIABLE(Varname, Varvalue, Vartype);
 
