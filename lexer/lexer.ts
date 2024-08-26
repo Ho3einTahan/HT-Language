@@ -43,12 +43,9 @@ export enum TokenType {
     //
     Symbol,
     //
-    PreDecrement,   // --a
-    PreIncrement,   // ++a
+    Decrement,   // --a
+    Increment,   // ++a
     Exponentiation, // **a
-    //
-    postDecrement,   // --a
-    postIncrement,   // ++a
     //
     EOF, // END OF FILE
 }
@@ -107,9 +104,13 @@ function isskippable(str: string) {
  Return whether the character is a valid integer -> [0-9]
  */
 export function isint(str: string) {
-    const c = str.charCodeAt(0);
-    return c >= 48 && c <= 57;
+    if (str && str.length > 0) {
+        const c = str.charCodeAt(0);
+        return c >= 48 && c <= 57;
+    }
+    return false;
 }
+
 
 /**
  * Given a string representing source code: Produce tokens and handles
@@ -120,7 +121,7 @@ export function isint(str: string) {
  */
 export function tokenize(sourceCode: string): Token[] {
     const tokens = new Array<Token>();
-    const src = sourceCode.split("");
+    let src = sourceCode.split("");
 
     // produce tokens until the EOF is reached.
     while (src.length > 0) {
@@ -146,27 +147,17 @@ export function tokenize(sourceCode: string): Token[] {
         else if (src[0] == '+' && src[1] == '+') {
             src.shift();
             src.shift();
-            tokens.push(token('++', TokenType.PreIncrement));
+            tokens.push(token('++', TokenType.Increment));
         }
         else if (src[0] == '-' && src[1] == '-') {
             src.shift();
             src.shift();
-            tokens.push(token('--', TokenType.PreDecrement));
+            tokens.push(token('--', TokenType.Decrement));
         }
         else if (src[0] == '*' && src[1] == '*') {
             src.shift();
             src.shift();
             tokens.push(token('**', TokenType.Exponentiation));
-        }
-        else if (src[1] == '+' && src[2] == '+') {
-            src.shift();
-            src.shift();
-            tokens.push(token('++', TokenType.postIncrement));
-        }
-        else if (src[1] == '-' && src[2] == '-') {
-            src.shift();
-            src.shift();
-            tokens.push(token('--', TokenType.postDecrement));
         }
         // HANDLE BINARY OPERATORS
         else if (src[0] == "+" || src[0] == "-" || src[0] == "*" || src[0] == "/" || src[0] == "%" || src[0] == "^") {
@@ -203,6 +194,7 @@ export function tokenize(sourceCode: string): Token[] {
                     // Unreconized name must mean user defined symbol.
                     tokens.push(token(ident, TokenType.Identifier));
                 }
+
             }
             else if (src[0] == ',' || src[0] == ':' || src[0] == '.') {
                 tokens.push(token(src.shift(), TokenType.Symbol));
