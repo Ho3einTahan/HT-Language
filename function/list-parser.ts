@@ -8,8 +8,10 @@ export class ListParser {
 
     static parse(parser: Parser, listName: string, list: Array<any>, listType: string) {
 
-        const htlList = new HTL_LIST(list);
-
+        const htlList = HTL_LIST.getInstance(list);
+        console.log(listType);
+        console.log(list);
+        console.log(listName);
         if (parser.at().value == 'at') {
 
             // remove at KEYWORD
@@ -56,8 +58,8 @@ export class ListParser {
             parser.eat();
 
             // get name of item that user defined
-            const itemName = parser.eat().value;
 
+            const itemName = parser.eat().value;
             // remove = character
             parser.eat();
 
@@ -178,59 +180,60 @@ export class ListParser {
             parser.memoryLIST.define_LIST(listName, { body: newList, type: listType } as ListType);
 
         }
-        
+
         // replace by index
-        if(parser.at().value=='replIndex'){
+        if (parser.at().value == 'replIndex') {
 
-              // remove list's methode
-              parser.eat();
+            // remove list's methode
+            parser.eat();
 
-              // remove openParen
-              parser.eat();
+            // remove openParen
+            parser.eat();
 
-            let index=parser.eat().value;
+            let index = parser.eat().value;
 
             // remove , character
             parser.eat();
 
-            let replaceContent=parser.eat().value;
-            
+            let replaceContent = parser.eat().value;
+
+            // remove closeParen
+            parser.eat();
+            console.log('s');
+            console.log(listType);
+            console.log('a');
+            const newList = htlList.replIndex(parseInt(index), replaceContent, listType);
+
+            parser.memoryLIST.define_LIST(listName, { body: newList, type: listType } as ListType);
+
+        }
+
+        // replcae by content
+        if (parser.at().value == 'replContent') {
+
+            // remove list's methode
+            parser.eat();
+
+            // remove openParen
+            parser.eat();
+
+            let content = parser.eat().value;
+
+            // remove , character
+            parser.eat();
+
+            let replaceContent = parser.eat().value;
+
             // remove closeParen
             parser.eat();
 
-           const newList= htlList.replIndex(parseInt(index),replaceContent,listType);
-           
-           parser.memoryLIST.define_LIST(listName, { body: newList, type: listType } as ListType);
+            const newList = htlList.replContent(content, replaceContent, listType);
 
-        }
-        
-        // replcae by content
-        if(parser.at().value=='replContent'){
-
-                          // remove list's methode
-                          parser.eat();
-
-                          // remove openParen
-                          parser.eat();
-            
-                        let content=parser.eat().value;
-            
-                        // remove , character
-                        parser.eat();
-            
-                        let replaceContent=parser.eat().value;
-                        
-                        // remove closeParen
-                        parser.eat();
-            
-                       const newList= htlList.replContent(content,replaceContent,listType);
-                       
-                       parser.memoryLIST.define_LIST(listName, { body: newList, type: listType } as ListType);            
+            parser.memoryLIST.define_LIST(listName, { body: newList, type: listType } as ListType);
 
         }
 
     }
 
 }
-
 
