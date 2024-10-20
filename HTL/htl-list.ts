@@ -4,17 +4,24 @@ import { stringToBool } from "../function/string-to-bool.ts";
 /// HoseinTahan Language List
 export class HTL_LIST {
 
-    array: Array<any>;
+    public static array: Array<any>;
+
+    private static instance: HTL_LIST;
+
+    public static getInstance(array: Array<any>) {
+    if(!this.instance) this.instance=new HTL_LIST(array);
+    return this.instance;
+    }
 
     constructor(array: Array<any>) {
-        this.array = array;
+        HTL_LIST.array = array;
     };
 
     /**
      * get length of List
      */
     length(): number {
-        return this.array.length;
+        return HTL_LIST.array.length;
     }
 
     /**
@@ -40,9 +47,9 @@ export class HTL_LIST {
      */
     getIndex(content: string, type: string): number {
 
-        if (type == 'liststring') return this.array.indexOf(content.slice(1, -1));
-        if (type == 'listint') return this.array.indexOf(parseInt(content));
-        if (type == 'listbool') return this.array.indexOf(stringToBool(content));
+        if (type == 'liststring') return HTL_LIST.array.indexOf(content.slice(1, -1));
+        if (type == 'listint') return HTL_LIST.array.indexOf(parseInt(content));
+        if (type == 'listbool') return HTL_LIST.array.indexOf(stringToBool(content));
         else {
             throw Error('Pleas Add correct Type OF Your List .');
         }
@@ -53,7 +60,7 @@ export class HTL_LIST {
      * get last item from List
      */
     lstItem(): any {
-        const lastItem = this.array.at(this.array.length - 1);
+        const lastItem = HTL_LIST.array.at(HTL_LIST.array.length - 1);
         // used of JSON.stringify To support string and othe type
         return JSON.stringify(lastItem);
     }
@@ -62,7 +69,7 @@ export class HTL_LIST {
      * get first item from List
      */
     fstItem(): any {
-        const firstItem = this.array.at(0);
+        const firstItem = HTL_LIST.array.at(0);
         // used of JSON.stringify To support string and othe type
         return JSON.stringify(firstItem);
     }
@@ -74,8 +81,8 @@ export class HTL_LIST {
     removeAt(index: number): Array<any> {
         // filter by index 
         /* const outArray = this.array.map((item, i) => i != index); */
-        delete this.array[index];
-        return this.array;
+        delete HTL_LIST.array[index];
+        return HTL_LIST.array;
     }
 
     /**
@@ -89,15 +96,15 @@ export class HTL_LIST {
         typeValidator(param, listType);
 
         if (param) {
-            if (listType == 'liststring') this.array.push(param);
-            if (listType == 'listint') this.array.push(parseInt(param));
-            if (listType == 'listbool') this.array.push(stringToBool(param));
+            if (listType == 'liststring') HTL_LIST.array.push(param);
+            if (listType == 'listint') HTL_LIST.array.push(parseInt(param));
+            if (listType == 'listbool') HTL_LIST.array.push(stringToBool(param));
         }
         else {
             throw Error('Pleas Enter Item To Add List');
         }
 
-        return this.array;
+        return HTL_LIST.array;
     }
 
     /**
@@ -113,8 +120,8 @@ export class HTL_LIST {
         });
 
 
-        this.array = items;
-        return this.array;
+        HTL_LIST.array = items;
+        return HTL_LIST.array;
     }
 
     /**
@@ -124,12 +131,14 @@ export class HTL_LIST {
      * @param listType
      */
     replIndex(index: number, content: any, listType: string) {
-
         // validate content listType
         typeValidator(content, listType);
-
-        this.array[index] = content;
-        return this.array;
+        console.log(HTL_LIST.array);
+        console.log(index);
+        console.log(content);
+        console.log(listType);
+        HTL_LIST.array[index] = content;
+        return HTL_LIST.array;
     }
 
 
@@ -147,7 +156,7 @@ export class HTL_LIST {
         // validate replaceContent listType
         typeValidator(replaceContent, listType);
 
-        const list = this.array.map((item) => {
+        const list = HTL_LIST.array.map((item) => {
             if (item == content) return replaceContent;
             else
                 return item;
@@ -156,8 +165,8 @@ export class HTL_LIST {
         return list;
     }
 
-    
-    
+
+
 
 
 }
