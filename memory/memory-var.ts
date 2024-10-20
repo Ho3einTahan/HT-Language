@@ -1,9 +1,7 @@
 
 export interface VarType {
-
     type: string,
     value: any,
-
 }
 
 // Varible Memory
@@ -14,11 +12,8 @@ export class MemoryVAR {
     private constructor() { }
 
     public static getInstance(): MemoryVAR {
-
         if (!MemoryVAR.instance) MemoryVAR.instance = new MemoryVAR();
-
         return MemoryVAR.instance;
-
     }
 
     private memory: Record<string, any> = {};
@@ -28,7 +23,7 @@ export class MemoryVAR {
         this.memory[key] = { type: type, value: value } as VarType;
     }
 
-    public get_VALUE_OF_VARIABLE(key: string):VarType {
+    public get_VALUE_OF_VARIABLE(key: string): VarType {
         return this.memory[key];
     }
 
