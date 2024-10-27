@@ -43,24 +43,41 @@ export function parse_log_expr(parser: Parser) {
 
 
             const listName = parser.eat().value;
-            const list = parser.memoryLIST.get_BODY_OF_LIST(listName).body;
+            const body = parser.memoryLIST.get_BODY_OF_LIST(listName).body;
             const listType = parser.memoryLIST.get_BODY_OF_LIST(listName).type;
 
             switch (parser.at().value) {
-                // HANDLE List Methode
+                // HANDLE LIST METHODE //
                 case '.':
-                    params.push(parseListMethodeExpression(parser, listName, list, listType));
+                    // removed . character
+                    parser.eat();
+                    const result = parseListMethodeExpression(parser, listName, body, listType);
+
+                    if (Array.isArray(result)) {
+                        params.push('[');
+
+                        result.map((item) => {
+                            params.push(`'${item}'`);
+                            params.push(',');
+                        });
+
+                        params.push(']');
+                    }
+                    else {
+                        params.push(result);
+                    }
+
                     break;
 
-                // if it has not methode
+                // IF IT HAS NOT METHODE //        
                 default:
 
-                    const emptyList = list.map(token => {
+                    const emptyList = body.map(token => {
                         if (listType == 'liststring') return `"${token}"`;
                         return token;
                     });
 
-                    // remove openParen OF Log  ==> log()
+                    // remove openParen OF Log  ==> log() //
                     params.shift();
 
                     params.unshift('[');
@@ -72,7 +89,7 @@ export function parse_log_expr(parser: Parser) {
 
                     // Remove , character At Last Element OF List
                     params.pop();
-                    // Add closeBrack At The End OF Array
+                    // Add closeBrack At The End OF Array //
                     params.push(']');
                     break;
             }
@@ -83,7 +100,7 @@ export function parse_log_expr(parser: Parser) {
             params.push(parser.eat().value);
         }
 
-    } // END OF WHILE
+    } // END OF WHILE //
 
     // remove openParen OF Log  ==> log()
     if (params[0] == '(') params.shift();
@@ -97,33 +114,33 @@ export function parse_log_expr(parser: Parser) {
 
 
 function parseVaribleExpression(parser: Parser): any {
-    return parser.memoryVAR.get_VALUE_OF_VARIABLE(parser.eat().value).value;
+    return parser.memoryVAR.get_VARIABLE_VALUE(parser.eat().value).value;
 }
 
 
 function parsePreIncrement_Decrement_Expression(parser: Parser) {
 
-    // tokens[0] => ++ -- **   tokens[1] => VarName
+    // tokens[0] => ++ -- **   tokens[1] => VarName //
     const Varname = parser.tokens[1].value;
-    
+
     // Remove Value OF Index 1 IN Array
     parser.tokens.splice(1, 1);
 
     parse_preIncrement_decrement_expr(parser, Varname);
 
-    return parser.memoryVAR.get_VALUE_OF_VARIABLE(Varname).value;
+    return parser.memoryVAR.get_VARIABLE_VALUE(Varname).value;
 }
 
 
 function parsePostIncrement_Decrement_Expression(parser: Parser) {
 
-    //   tokens[0] => VarName tokens[1] => ++ -- **
+    //   tokens[0] => VarName tokens[1] => ++ -- ** //
     const Varname = parser.eat().value;
 
     // get current value of variable
-    const VarValue = parser.memoryVAR.get_VALUE_OF_VARIABLE(Varname).value;
+    const VarValue = parser.memoryVAR.get_VARIABLE_VALUE(Varname).value;
 
-    // HANDLE Increment AND Decrement => ++ --
+    // HANDLE Increment AND Decrement => ++ -- //
     parse_postIncrement_decrement_expr(parser, Varname);
 
     // return previous value of variable
@@ -131,10 +148,8 @@ function parsePostIncrement_Decrement_Expression(parser: Parser) {
 }
 
 function parseListMethodeExpression(parser: Parser, listName: string, list: Array<any>, listType: string) {
-    // removed . character
-    parser.eat();
-
-    return ListParser.parse(parser, listName, list, listType)
+    // RETURN RESULT OF LIST METHODE
+    return ListParser.parse(parser, listName, list, listType);
 }
 
 
@@ -142,8 +157,8 @@ function parseOperatorToApplyList(params: Array<any>, parser: Parser) {
 
     const unValidOperators = ['+', '-', '*', '/', '%'];
 
-    // [a,b,c,d,e,f]+12 => Error
-    // [a,b,c,d,e,f] => correct
+    // [a,b,c,d,e,f]+12 => Error //
+    // [a,b,c,d,e,f] => correct //
     if (params.indexOf(']') != -1 && unValidOperators.includes(parser.at().value)) {
         const operator = parser.at().value;
         const MSG = ` '${operator}' cant be applied to types List `;
