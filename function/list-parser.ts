@@ -1,4 +1,3 @@
-import { Program } from "../ast/ast.ts";
 import { HTL_LIST } from "../HTL/htl-list.ts";
 import { Token, TokenType, tokenize } from "../lexer/lexer.ts";
 import { ListType } from "../memory/memory-list.ts";
@@ -9,9 +8,7 @@ export class ListParser {
     static parse(parser: Parser, listName: string, list: Array<any>, listType: string) {
 
         const htlList = HTL_LIST.getInstance(list);
-        console.log(listType);
-        console.log(list);
-        console.log(listName);
+
         if (parser.at().value == 'at') {
 
             // remove at KEYWORD
@@ -26,7 +23,8 @@ export class ListParser {
             // remove closeParen
             parser.eat();
 
-            return htlList.at(list, listType, index);
+            // RETURN ==>   `BOOLEAN`    `NUMBER`    `STRING` //
+            return htlList.at(list, listType, index) as any;
 
         }
 
@@ -80,7 +78,7 @@ export class ListParser {
             list.forEach((item) => {
 
                 forEachBodies.push(parser.tokens.map((token) => {
-                    const newToken = { value: token.value.replace(itemName, item), type: token.type } as Token;
+                    const newToken = { value: token.value.replace(itemName, listType == 'liststring' ? `'${item}'` : item), type: token.type } as Token;
                     return newToken;
                 }));
 
@@ -199,13 +197,12 @@ export class ListParser {
 
             // remove closeParen
             parser.eat();
-            console.log('s');
-            console.log(listType);
-            console.log('a');
+
             const newList = htlList.replIndex(parseInt(index), replaceContent, listType);
 
             parser.memoryLIST.define_LIST(listName, { body: newList, type: listType } as ListType);
 
+            return newList as Array<any>;
         }
 
         // replcae by content
@@ -236,4 +233,3 @@ export class ListParser {
     }
 
 }
-
