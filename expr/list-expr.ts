@@ -107,13 +107,13 @@ export function parse_list_expr(parser: Parser): Expr {
     }
 
 
-        if (parser.at().type == TokenType.closeBrack) bodyList.push(parser.eat().value);
+    if (parser.at().type == TokenType.closeBrack) bodyList.push(parser.eat().value);
 
-        const jsonString = bodyList.join('');
+    const jsonString = bodyList.join('');
 
-        let body: Array<any>=eval(jsonString);
+    let body: Array<any> = eval(jsonString);
 
-        parser.memoryLIST.define_LIST(listName, { type: listType, body } as ListType);
+    parser.memoryLIST.define_LIST(listName, { type: listType, body } as ListType);
 
     return {} as Expr;
 }
