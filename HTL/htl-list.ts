@@ -9,8 +9,8 @@ export class HTL_LIST {
     private static instance: HTL_LIST;
 
     public static getInstance(array: Array<any>) {
-    if(!this.instance) this.instance=new HTL_LIST(array);
-    return this.instance;
+        if (!this.instance) this.instance = new HTL_LIST(array);
+        return this.instance;
     }
 
     constructor(array: Array<any>) {
@@ -133,11 +133,13 @@ export class HTL_LIST {
     replIndex(index: number, content: any, listType: string) {
         // validate content listType
         typeValidator(content, listType);
-        console.log(HTL_LIST.array);
-        console.log(index);
-        console.log(content);
-        console.log(listType);
-        HTL_LIST.array[index] = content;
+
+        if (content) {
+            if (listType == 'liststring') HTL_LIST.array[index] = content;
+            if (listType == 'listint') HTL_LIST.array[index] = parseInt(content);
+            if (listType == 'listbool') HTL_LIST.array[index] = stringToBool(content);
+        }
+
         return HTL_LIST.array;
     }
 
