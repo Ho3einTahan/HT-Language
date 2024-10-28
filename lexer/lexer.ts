@@ -43,6 +43,8 @@ export enum TokenType {
     //
     Symbol,
     //
+    For,
+    //
     Decrement,   // --a
     Increment,   // ++a
     Exponentiation, // **a
@@ -69,6 +71,8 @@ const KEYWORDS: Record<string, TokenType> = {
     false: TokenType.False,
     //
     log: TokenType.Log,
+    //
+    for: TokenType.For,
     //
     if: TokenType.IF,
     else: TokenType.ELSE,
