@@ -12,6 +12,7 @@ import { MemoryList } from "../memory/memory-list.ts";
 import { parse_preIncrement_decrement_expr } from "../expr/pre-increment-decrement-expr.ts";
 import { parse_postIncrement_decrement_expr } from "../expr/post-increment-decrement-expr.ts";
 import { ListParser } from "../function/list-parser.ts";
+import { parse_for_expr } from "../expr/loop/for-expr.ts";
 
 
 export default class Parser {
@@ -98,6 +99,9 @@ export default class Parser {
             // WHEN WE HAVE A LOG() THEN RETURN VALUE TO ==>> LOG(VALUE) //
             // RETURN {} BECAUSE WE DO NOT HAVE VALUE TO RETURN
             return {} as Expr;
+        }
+        else if (this.at().type == TokenType.For) {
+            return parse_for_expr(this,this.memoryVAR);
         }
         // NUMERIC
         else if (this.at().type == TokenType.Number || this.at().value == '(') {
