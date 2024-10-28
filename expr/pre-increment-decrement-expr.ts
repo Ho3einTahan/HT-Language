@@ -13,8 +13,8 @@ export function parse_preIncrement_decrement_expr(parser: Parser, Varname: strin
 
     if (parser.memoryVAR.hasVariable(Varname)) {
 
-        Varvalue = parser.memoryVAR.get_VALUE_OF_VARIABLE(Varname).value;
-        Vartype = parser.memoryVAR.get_VALUE_OF_VARIABLE(Varname).type;
+        Varvalue = parser.memoryVAR.get_VARIABLE_VALUE(Varname).value;
+        Vartype = parser.memoryVAR.get_VARIABLE_VALUE(Varname).type;
 
         switch (operator) {
 
@@ -37,7 +37,7 @@ export function parse_preIncrement_decrement_expr(parser: Parser, Varname: strin
     }
 
     // Update Value OF Variable
-    parser.memoryVAR.define_VARIABLE(Varname, Varvalue, Vartype);
+    parser.memoryVAR.def_VARIABLE(Varname, Varvalue, Vartype);
 
     return {} as Expr;
 
